@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -71,7 +72,9 @@ class AuthController extends GetxController {
 
       Get.offAllNamed(AppRoutes.NAVIGATION);
     } catch (e) {
-      errorMessage.value = e.toString();
+      errorMessage.value = e is DioException
+          ? (e.error?.toString() ?? e.message ?? 'Connection error')
+          : e.toString();
       Get.snackbar('Login Failed', errorMessage.value,
           backgroundColor: Colors.red.withOpacity(0.1), colorText: Colors.red);
     } finally {
@@ -109,7 +112,9 @@ class AuthController extends GetxController {
 
       Get.offAllNamed(AppRoutes.NAVIGATION);
     } catch (e) {
-      errorMessage.value = e.toString();
+      errorMessage.value = e is DioException
+          ? (e.error?.toString() ?? e.message ?? 'Connection error')
+          : e.toString();
       Get.snackbar('Registration Failed', errorMessage.value,
           backgroundColor: Colors.red.withOpacity(0.1), colorText: Colors.red);
     } finally {
