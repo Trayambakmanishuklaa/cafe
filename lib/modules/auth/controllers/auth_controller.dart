@@ -1,0 +1,136 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../../app/core/storage/storage_service.dart';
+import '../../../app/routes/app_routes.dart';
+import '../../../data/models/user_model.dart';
+import '../../../data/repositories/auth_repository.dart';
+
+class AuthController extends GetxController {
+  final AuthRepository _authRepository = Get.find<AuthRepository>();
+  final StorageService _storageService = Get.find<StorageService>();
+
+  final Rxn<UserModel> currentUser = Rxn<UserModel>();
+  final RxBool isLoading = false.obs;
+  final RxString errorMessage = ''.obs;
+
+  // Form Controllers
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final nameController = TextEditingController();
+  final phoneController = TextEditingController();
+
+  final RxString selectedRole = 'CUSTOMER'.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    restoreSession();
+  }
+
+  Future<void> restoreSession() async {
+    final token = await _storageService.getToken();
+    final userRaw = _storageService.getUserRaw();
+
+    if (token != null && token.isNotEmpty && userRaw != null) {
+      try {
+        currentUser.value = UserModel.fromRawJson(userRaw);
+        // Refresh profile in background
+        _authRepository.getProfile().then((updatedUser) {
+          currentUser.value = updatedUser;
+          _storageService.saveUserRaw(updatedUser.toRawJson());
+        }).catchError((_) {});
+      } catch (e) {
+        await _storageService.clearAll();
+      }
+    }
+  }
+
+  Future<void> login() async {
+    if (emailController.text.trim().isEmpty || passwordController.text.trim().isEmpty) {
+      Get.snackbar('Validation Error', 'Please enter email and password',
+          backgroundColor: Colors.red.withOpacity(0.1), colorText: Colors.red);
+      return;
+    }
+
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      final res = await _authRepository.login(
+        emailController.text.trim(),
+        passwordController.text.trim(),
+      );
+
+      final token = res['token'] as String;
+      final user = UserModel.fromJson(res['user']);
+
+      await _storageService.saveToken(token);
+      await _storageService.saveUserRaw(user.toRawJson());
+      currentUser.value = user;
+
+      Get.offAllNamed(AppRoutes.NAVIGATION);
+    } catch (e) {
+      errorMessage.value = e.toString();
+      Get.snackbar('Login Failed', errorMessage.value,
+          backgroundColor: Colors.red.withOpacity(0.1), colorText: Colors.red);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> register() async {
+    if (nameController.text.trim().isEmpty ||
+        emailController.text.trim().isEmpty ||
+        passwordController.text.trim().isEmpty) {
+      Get.snackbar('Validation Error', 'Please fill in all required fields',
+          backgroundColor: Colors.red.withOpacity(0.1), colorText: Colors.red);
+      return;
+    }
+
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      final res = await _authRepository.register(
+        name: nameController.text.trim(),
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+        phone: phoneController.text.trim().isEmpty ? null : phoneController.text.trim(),
+        role: selectedRole.value,
+      );
+
+      final token = res['token'] as String;
+      final user = UserModel.fromJson(res['user']);
+
+      await _storageService.saveToken(token);
+      await _storageService.saveUserRaw(user.toRawJson());
+      currentUser.value = user;
+
+      Get.offAllNamed(AppRoutes.NAVIGATION);
+    } catch (e) {
+      errorMessage.value = e.toString();
+      Get.snackbar('Registration Failed', errorMessage.value,
+          backgroundColor: Colors.red.withOpacity(0.1), colorText: Colors.red);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> logout() async {
+    await _storageService.clearAll();
+    currentUser.value = null;
+    emailController.clear();
+    passwordController.clear();
+    Get.offAllNamed(AppRoutes.LOGIN);
+  }
+
+  @override
+  void onClose() {
+    emailController.dispose();
+    passwordController.dispose();
+    nameController.dispose();
+    phoneController.dispose();
+    super.onClose();
+  }
+}
