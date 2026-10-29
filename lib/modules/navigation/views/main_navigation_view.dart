@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../app/routes/app_routes.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../home/views/home_view.dart';
@@ -33,8 +34,18 @@ class _MainNavigationViewState extends State<MainNavigationView> {
     return Obx(() {
       final user = authController.currentUser.value;
 
+      // STRICT PRIVACY CHECK: If unauthenticated, immediately redirect to Login
+      if (user == null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Get.offAllNamed(AppRoutes.LOGIN);
+        });
+        return const Scaffold(
+          body: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+        );
+      }
+
       // Staff Navigation Shell
-      if (user?.isStaff == true) {
+      if (user.isStaff) {
         return const StaffMainNavigationView();
       }
 

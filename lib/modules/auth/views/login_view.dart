@@ -181,15 +181,7 @@ class _LoginViewState extends State<LoginView> {
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
                   child: Column(
                     children: [
-                      // Skip Button
-                      Align(
-                        alignment: Alignment.topRight,
-                        child: TextButton(
-                          onPressed: () => Get.offAllNamed(AppRoutes.NAVIGATION),
-                          child: const Text('Skip', style: TextStyle(color: Colors.white, fontSize: 16)),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 24),
 
                       // Circular Cafe Logo Badge
                       Container(
