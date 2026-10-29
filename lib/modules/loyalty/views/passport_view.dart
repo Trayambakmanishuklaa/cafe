@@ -190,7 +190,7 @@ class PassportView extends StatelessWidget {
                 ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: p!.transactions.length,
+                  itemCount: p?.transactions.length ?? 0,
                   separatorBuilder: (_, __) => const Divider(height: 1),
                   itemBuilder: (context, index) {
                     final tx = p.transactions[index];
