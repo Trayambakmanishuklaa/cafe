@@ -21,6 +21,8 @@ const customersRoutes = require('./modules/customers/customers.routes');
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 // Security and utility middleware
 app.use(helmet());
 app.use(cors({ origin: env.CORS_ORIGIN }));
