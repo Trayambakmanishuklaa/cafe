@@ -7,6 +7,7 @@ import '../../../data/models/cart_item_model.dart';
 import '../../../data/models/order_model.dart';
 import '../../../data/models/product_model.dart';
 import '../../../data/repositories/order_repository.dart';
+import '../../auth/controllers/auth_controller.dart';
 
 class CartController extends GetxController {
   final OrderRepository _orderRepository = Get.put(OrderRepository(Get.find()));
@@ -82,6 +83,26 @@ class CartController extends GetxController {
   }
 
   Future<OrderModel?> placeOrder({String? tableId, String? bookingId}) async {
+    final authController = Get.find<AuthController>();
+    if (authController.currentUser.value == null) {
+      Get.defaultDialog(
+        title: '🔐 Login Required',
+        middleText: 'Please log in or register to place orders and earn loyalty points!',
+        confirm: ElevatedButton(
+          onPressed: () {
+            Get.back();
+            Get.toNamed(AppRoutes.LOGIN);
+          },
+          child: const Text('LOGIN NOW'),
+        ),
+        cancel: TextButton(
+          onPressed: () => Get.back(),
+          child: const Text('CANCEL'),
+        ),
+      );
+      return null;
+    }
+
     if (cartItems.isEmpty) {
       Get.snackbar('Empty Cart', 'Please add items to your cart first');
       return null;

@@ -3,9 +3,11 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/core/errors/error_utils.dart';
+import '../../../app/routes/app_routes.dart';
 import '../../../data/models/booking_model.dart';
 import '../../../data/models/table_model.dart';
 import '../../../data/repositories/booking_repository.dart';
+import '../../auth/controllers/auth_controller.dart';
 
 class BookingController extends GetxController {
   final BookingRepository _bookingRepository = Get.put(BookingRepository(Get.find()));
@@ -54,6 +56,26 @@ class BookingController extends GetxController {
   }
 
   Future<void> selectTable(TableModel table) async {
+    final authController = Get.find<AuthController>();
+    if (authController.currentUser.value == null) {
+      Get.defaultDialog(
+        title: '🔐 Login Required',
+        middleText: 'Please log in or register to reserve seats and pre-order food!',
+        confirm: ElevatedButton(
+          onPressed: () {
+            Get.back();
+            Get.toNamed(AppRoutes.LOGIN);
+          },
+          child: const Text('LOGIN NOW'),
+        ),
+        cancel: TextButton(
+          onPressed: () => Get.back(),
+          child: const Text('CANCEL'),
+        ),
+      );
+      return;
+    }
+
     if (!table.isAvailable) {
       Get.snackbar('Seat Unavailable', 'This table is already reserved for the selected slot');
       return;
