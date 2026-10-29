@@ -59,6 +59,9 @@ app.use('/api/v1/payments', paymentsRoutes);
 app.use('/api/v1/loyalty', loyaltyRoutes);
 app.use('/api/v1/recommendations', recommendationsRoutes);
 app.use('/api/v1/seats', seatsRoutes);
+app.use('/api/v1/sheets', seatsRoutes);
+app.use('/api/v1/staff/seats', seatsRoutes);
+app.use('/api/v1/bookings/tables', seatsRoutes);
 
 // Catch 404
 app.use((req, res, next) => {

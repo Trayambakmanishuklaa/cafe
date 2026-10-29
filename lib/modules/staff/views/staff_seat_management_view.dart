@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../app/core/constants/api_constants.dart';
 import '../../../app/core/errors/error_utils.dart';
 import '../../../app/core/network/api_client.dart';
 import '../../../app/theme/app_colors.dart';
@@ -33,7 +34,7 @@ class _StaffSeatManagementViewState extends State<StaffSeatManagementView> {
   Future<void> _fetchSeats() async {
     setState(() => _isLoading = true);
     try {
-      final res = await _apiClient.get('/seats');
+      final res = await _apiClient.get(ApiConstants.tables);
       setState(() {
         _seats = res.data['data'] ?? [];
       });
@@ -51,7 +52,7 @@ class _StaffSeatManagementViewState extends State<StaffSeatManagementView> {
     }
 
     try {
-      await _apiClient.post('/seats/staff', data: {
+      await _apiClient.post(ApiConstants.staffSeats, data: {
         'tableNumber': int.parse(_tableNumberController.text.trim()),
         'name': _nameController.text.trim().isEmpty ? null : _nameController.text.trim(),
         'capacity': int.tryParse(_capacityController.text.trim()) ?? 4,
@@ -66,7 +67,7 @@ class _StaffSeatManagementViewState extends State<StaffSeatManagementView> {
       _descController.clear();
 
       Get.snackbar('Success', 'New seat added successfully!',
-          backgroundColor: Colors.green.withOpacity(0.1), colorText: Colors.green);
+          backgroundColor: Colors.green.withAlpha(25), colorText: Colors.green);
       _fetchSeats();
     } catch (e) {
       Get.snackbar('Add Seat Failed', ErrorUtils.getCleanMessage(e));
@@ -75,11 +76,11 @@ class _StaffSeatManagementViewState extends State<StaffSeatManagementView> {
 
   Future<void> _updateSeatStatus(String seatId, String newStatus) async {
     try {
-      await _apiClient.patch('/seats/staff/$seatId/status', data: {
+      await _apiClient.patch('${ApiConstants.tables}/staff/$seatId/status', data: {
         'manualStatus': newStatus,
       });
       Get.snackbar('Status Updated', 'Seat marked as $newStatus',
-          backgroundColor: Colors.green.withOpacity(0.1), colorText: Colors.green);
+          backgroundColor: Colors.green.withAlpha(25), colorText: Colors.green);
       _fetchSeats();
     } catch (e) {
       Get.snackbar('Update Failed', ErrorUtils.getCleanMessage(e));
@@ -125,7 +126,7 @@ class _StaffSeatManagementViewState extends State<StaffSeatManagementView> {
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: isFree ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+                                color: isFree ? Colors.green.withAlpha(25) : Colors.red.withAlpha(25),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Icon(
