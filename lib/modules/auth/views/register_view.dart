@@ -141,7 +141,7 @@ class _RegisterViewState extends State<RegisterView> {
               ),
               const SizedBox(height: 6),
               const Text(
-                'Join Shubh\'s Cafe and enjoy the best\ntea, coffee, buns & burgers!',
+                'Join Shubh\'s Cafe and enjoy the best\ntruly tea, coffee, buns & burgers!',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.3),
               ),
@@ -228,7 +228,7 @@ class _RegisterViewState extends State<RegisterView> {
                       : () {
                           if (controller.passwordController.text != _confirmPasswordController.text) {
                             Get.snackbar('Validation Error', 'Passwords do not match',
-                                backgroundColor: Colors.red.withOpacity(0.1), colorText: Colors.red);
+                                backgroundColor: const Color(0x1AD32F2F), colorText: Colors.red);
                             return;
                           }
                           controller.register();
@@ -263,7 +263,6 @@ class _RegisterViewState extends State<RegisterView> {
 
               // Login Link
               Row(
-                mainAxisAlignment: MainDataFrame.center, // wait, MainAxisAlignment.center
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
