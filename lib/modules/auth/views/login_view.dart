@@ -24,53 +24,124 @@ class _LoginViewState extends State<LoginView> {
     Widget? suffixIcon,
     TextInputType keyboardType = TextInputType.text,
   }) {
+
     return Container(
-      height: 60,
+      height: 80,
       decoration: BoxDecoration(
-        color: const Color(0xFFF4F0E6),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE2DCD0), width: 1.2),
+        borderRadius: BorderRadius.circular(24),
+
+        // Frosted glass background
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFFFDFCF6).withAlpha(235),
+            const Color(0xFFE8EEDC).withAlpha(190),
+            const Color(0xFFF7F5E9).withAlpha(220),
+          ],
+        ),
+
+        // Glass border
+        border: Border.all(
+          color: const Color(0xFFFFFFFF).withAlpha(230),
+          width: 1.5,
+        ),
+
+        // Soft glass shadows
         boxShadow: [
           BoxShadow(
-            color: Colors.white.withAlpha(200),
-            offset: const Offset(-2, -2),
-            blurRadius: 6,
+            color: const Color(0xFF224D35).withAlpha(22),
+            blurRadius: 20,
+            spreadRadius: 1,
+            offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: Colors.black.withAlpha(15),
-            offset: const Offset(2, 4),
+            color: Colors.white.withAlpha(180),
             blurRadius: 8,
+            offset: const Offset(-3, -3),
           ),
         ],
       ),
-      child: TextField(
-        controller: controller,
-        obscureText: obscureText,
-        keyboardType: keyboardType,
-        style: const TextStyle(color: AppColors.textPrimary, fontSize: 15, fontWeight: FontWeight.w500),
-        decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: const TextStyle(color: AppColors.textLight, fontSize: 14),
-          prefixIcon: Padding(
-            padding: const EdgeInsets.only(left: 12, right: 8),
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withAlpha(20),
-                shape: BoxShape.circle,
+
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: TextField(
+          controller: controller,
+          obscureText: obscureText,
+          keyboardType: keyboardType,
+
+          cursorColor: const Color(0xFF224D35),
+
+          style: const TextStyle(
+            color: Color(0xFF193C29),
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+
+          decoration: InputDecoration(
+            hintText: hintText,
+
+            hintStyle: const TextStyle(
+              color: Color(0xFF92988D),
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+            ),
+
+            // Circular icon background
+            prefixIcon: Padding(
+              padding: const EdgeInsets.only(
+                left: 12,
+                right: 10,
               ),
-              child: Icon(icon, color: AppColors.primary, size: 20),
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      const Color(0xFFDDE8CE).withAlpha(240),
+                      const Color(0xFFC5D7B3).withAlpha(210),
+                    ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF224D35).withAlpha(15),
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  icon,
+                  color: const Color(0xFF224D35),
+                  size: 21,
+                ),
+              ),
+            ),
+
+            prefixIconConstraints: const BoxConstraints(
+              minWidth: 0,
+              minHeight: 0,
+            ),
+
+            // Password visibility button or other suffix icon
+            suffixIcon: suffixIcon,
+
+            border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 20,
             ),
           ),
-          prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
-          suffixIcon: suffixIcon,
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
       ),
     );
+
   }
 
   @override

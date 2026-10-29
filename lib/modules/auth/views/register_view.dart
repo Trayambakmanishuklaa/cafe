@@ -25,21 +25,21 @@ class _RegisterViewState extends State<RegisterView> {
     TextInputType keyboardType = TextInputType.text,
   }) {
     return Container(
-      height: 60,
+      height: 64,
       decoration: BoxDecoration(
-        color: const Color(0xFFF4F0E6),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE2DCD0), width: 1.2),
+        color: const Color(0xFFF0EAE1),
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: const Color(0xFFE2DCD0), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.white.withAlpha(200),
-            offset: const Offset(-2, -2),
-            blurRadius: 6,
+            color: Colors.white.withAlpha(240),
+            offset: const Offset(-4, -4),
+            blurRadius: 10,
           ),
           BoxShadow(
-            color: Colors.black.withAlpha(15),
-            offset: const Offset(2, 4),
-            blurRadius: 8,
+            color: Colors.black.withAlpha(25),
+            offset: const Offset(4, 6),
+            blurRadius: 12,
           ),
         ],
       ),
@@ -52,12 +52,19 @@ class _RegisterViewState extends State<RegisterView> {
           hintText: hintText,
           hintStyle: const TextStyle(color: AppColors.textLight, fontSize: 14),
           prefixIcon: Padding(
-            padding: const EdgeInsets.only(left: 12, right: 8),
+            padding: const EdgeInsets.only(left: 14, right: 12),
             child: Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.primary.withAlpha(20),
+                color: const Color(0xFFE4DDD2),
                 shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.white.withAlpha(200),
+                    offset: const Offset(-1, -1),
+                    blurRadius: 3,
+                  ),
+                ],
               ),
               child: Icon(icon, color: AppColors.primary, size: 20),
             ),
@@ -67,7 +74,7 @@ class _RegisterViewState extends State<RegisterView> {
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         ),
       ),
     );
@@ -88,35 +95,45 @@ class _RegisterViewState extends State<RegisterView> {
               // Back Button
               Align(
                 alignment: Alignment.topLeft,
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: AppColors.primary),
-                  onPressed: () => Get.back(),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF0EAE1),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(color: Colors.white.withAlpha(200), offset: const Offset(-2, -2), blurRadius: 6),
+                      BoxShadow(color: Colors.black.withAlpha(20), offset: const Offset(2, 4), blurRadius: 6),
+                    ],
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back, color: AppColors.primary),
+                    onPressed: () => Get.back(),
+                  ),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
 
-              // Circular Cafe Logo Badge
+              // Circular Cafe Logo Badge with Golden Ring Glow
               Center(
                 child: Container(
-                  height: 100,
-                  width: 100,
+                  height: 110,
+                  width: 110,
                   decoration: BoxDecoration(
                     color: AppColors.surface,
                     shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.secondary, width: 2.5),
+                    border: Border.all(color: AppColors.secondary, width: 3),
                     boxShadow: [
-                      BoxShadow(color: Colors.black.withAlpha(30), blurRadius: 8, offset: const Offset(0, 4)),
+                      BoxShadow(color: AppColors.secondary.withAlpha(100), blurRadius: 16, offset: const Offset(0, 4)),
                     ],
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.coffee, size: 30, color: AppColors.primary),
+                      const Icon(Icons.coffee, size: 34, color: AppColors.primary),
                       const SizedBox(height: 2),
                       const Text(
                         "Shubh's",
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 13,
                           fontWeight: FontWeight.bold,
                           color: AppColors.primary,
                           fontFamily: 'serif',
@@ -142,18 +159,18 @@ class _RegisterViewState extends State<RegisterView> {
                 'Create Your Account',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 26,
                   fontWeight: FontWeight.bold,
                   color: AppColors.primary,
                 ),
               ),
               const SizedBox(height: 6),
               const Text(
-                'Join Shubh\'s Cafe and enjoy the best\ntea, coffee, buns & burgers!',
+                'Join Shubh\'s Cafe and enjoy the best\ntea, coffee, buns & burgers',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.3),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
 
               // Full Name Field
               _buildNeumorphicTextField(
@@ -161,7 +178,7 @@ class _RegisterViewState extends State<RegisterView> {
                 hintText: 'Enter your full name',
                 icon: Icons.person_outline,
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 16),
 
               // Email Field
               _buildNeumorphicTextField(
@@ -170,7 +187,7 @@ class _RegisterViewState extends State<RegisterView> {
                 icon: Icons.email_outlined,
                 keyboardType: TextInputType.emailAddress,
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 16),
 
               // Phone Number Field
               _buildNeumorphicTextField(
@@ -179,7 +196,7 @@ class _RegisterViewState extends State<RegisterView> {
                 icon: Icons.phone_outlined,
                 keyboardType: TextInputType.phone,
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 16),
 
               // Password Field
               _buildNeumorphicTextField(
@@ -199,7 +216,7 @@ class _RegisterViewState extends State<RegisterView> {
                   },
                 ),
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 16),
 
               // Confirm Password Field
               _buildNeumorphicTextField(
@@ -219,7 +236,7 @@ class _RegisterViewState extends State<RegisterView> {
                   },
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
 
               // REGISTER Button with Arrow
               Obx(
@@ -227,9 +244,9 @@ class _RegisterViewState extends State<RegisterView> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
-                    minimumSize: const Size.fromHeight(56),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-                    elevation: 4,
+                    minimumSize: const Size.fromHeight(60),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                    elevation: 6,
                   ),
                   onPressed: controller.isLoading.value
                       ? null
@@ -289,7 +306,20 @@ class _RegisterViewState extends State<RegisterView> {
                   ),
                 ],
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
+
+              // Divider with Leaf
+              Row(
+                children: [
+                  const Expanded(child: Divider(color: AppColors.divider)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Icon(Icons.eco, size: 18, color: AppColors.primary.withAlpha(150)),
+                  ),
+                  const Expanded(child: Divider(color: AppColors.divider)),
+                ],
+              ),
+              const SizedBox(height: 20),
 
               // Footer tagline
               const Center(
@@ -298,6 +328,7 @@ class _RegisterViewState extends State<RegisterView> {
                   style: TextStyle(color: AppColors.textSecondary, fontSize: 13, fontStyle: FontStyle.italic),
                 ),
               ),
+              const SizedBox(height: 20),
             ],
           ),
         ),
