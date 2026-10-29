@@ -28,8 +28,8 @@ class _RegisterViewState extends State<RegisterView> {
       height: 64,
       decoration: BoxDecoration(
         color: const Color(0xFFF0EAE1),
-        borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: const Color(0xFFE2DCD0), width: 1.5),
+        borderRadius: BorderRadius.circular(36),
+        border: Border.all(color: const Color(0xFFD8D0C2), width: 1.8),
         boxShadow: [
           BoxShadow(
             color: Colors.white.withAlpha(240),
