@@ -26,15 +26,33 @@ class _LoginViewState extends State<LoginView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Top Hero Banner with Curved Wave
+            // Top Hero Banner with Cafe Wall Interior Image Background & Wave
             ClipPath(
               clipper: HeaderWaveClipper(),
               child: Container(
                 height: 320,
-                color: AppColors.primary,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
-                child: Column(
-                  children: [
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(
+                      'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80',
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.black.withOpacity(0.5),
+                        AppColors.primary.withOpacity(0.85),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+                  child: Column(
+                    children: [
                     // Skip Button
                     Align(
                       alignment: Alignment.topRight,
@@ -89,10 +107,8 @@ class _LoginViewState extends State<LoginView> {
                       style: TextStyle(
                         color: AppColors.secondaryLight,
                         fontSize: 13,
-                        fontStyle: FontStyle.italic,
-                      ),
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
