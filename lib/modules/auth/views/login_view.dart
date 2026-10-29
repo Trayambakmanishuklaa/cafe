@@ -25,20 +25,21 @@ class _LoginViewState extends State<LoginView> {
     TextInputType keyboardType = TextInputType.text,
   }) {
     return Container(
-      height: 56,
+      height: 60,
       decoration: BoxDecoration(
-        color: const Color(0xFFF2ECE1),
-        borderRadius: BorderRadius.circular(28),
+        color: const Color(0xFFF4F0E6),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2DCD0), width: 1.2),
         boxShadow: [
           BoxShadow(
-            color: Colors.white.withAlpha(240),
-            offset: const Offset(-4, -4),
-            blurRadius: 10,
+            color: Colors.white.withAlpha(200),
+            offset: const Offset(-2, -2),
+            blurRadius: 6,
           ),
           BoxShadow(
-            color: Colors.black.withAlpha(30),
-            offset: const Offset(4, 4),
-            blurRadius: 10,
+            color: Colors.black.withAlpha(15),
+            offset: const Offset(2, 4),
+            blurRadius: 8,
           ),
         ],
       ),
@@ -51,15 +52,22 @@ class _LoginViewState extends State<LoginView> {
           hintText: hintText,
           hintStyle: const TextStyle(color: AppColors.textLight, fontSize: 14),
           prefixIcon: Padding(
-            padding: const EdgeInsets.only(left: 20, right: 12),
-            child: Icon(icon, color: AppColors.primary, size: 22),
+            padding: const EdgeInsets.only(left: 12, right: 8),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withAlpha(20),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: AppColors.primary, size: 20),
+            ),
           ),
           prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
           suffixIcon: suffixIcon,
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
       ),
     );
