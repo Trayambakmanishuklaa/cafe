@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../app/core/errors/error_utils.dart';
 import '../../../app/core/network/api_client.dart';
@@ -17,6 +19,7 @@ class StaffProductManagementView extends StatefulWidget {
 class _StaffProductManagementViewState extends State<StaffProductManagementView> {
   final ApiClient _apiClient = Get.find<ApiClient>();
   final CafeMenuController _menuController = Get.put(CafeMenuController());
+  final ImagePicker _picker = ImagePicker();
 
   List<ProductModel> _products = [];
   bool _isLoading = true;
@@ -32,7 +35,7 @@ class _StaffProductManagementViewState extends State<StaffProductManagementView>
 
   @override
   void initState() {
-    super.initState();
+    super.override();
     _fetchProducts();
   }
 
@@ -48,6 +51,32 @@ class _StaffProductManagementViewState extends State<StaffProductManagementView>
       Get.snackbar('Error', ErrorUtils.getCleanMessage(e));
     } finally {
       setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _pickImageFromGallery(StateSetter setModalState) async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 80,
+      );
+
+      if (image != null) {
+        final bytes = await image.readAsBytes();
+        final base64String = base64Encode(bytes);
+        final dataUrl = 'data:image/jpeg;base64,$base64String';
+
+        setModalState(() {
+          _imageUrlController.text = dataUrl;
+        });
+
+        Get.snackbar('Photo Selected', 'Image selected from gallery successfully!',
+            backgroundColor: Colors.green.withOpacity(0.1), colorText: Colors.green);
+      }
+    } catch (e) {
+      Get.snackbar('Image Picker Error', e.toString());
     }
   }
 
@@ -134,56 +163,89 @@ class _StaffProductManagementViewState extends State<StaffProductManagementView>
 
     Get.defaultDialog(
       title: product == null ? '➕ Add New Product' : '✏️ Edit Product',
-      content: SingleChildScrollView(
-        child: Column(
-          children: [
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Product Name'),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _descController,
-              decoration: const InputDecoration(labelText: 'Description'),
-            ),
-            const SizedBox(height: 10),
-            DropdownButtonFormField<String>(
-              value: _selectedCategorySlug,
-              decoration: const InputDecoration(labelText: 'Category'),
-              items: const [
-                DropdownMenuItem(value: 'tea', child: Text('Tea Corner')),
-                DropdownMenuItem(value: 'coffee', child: Text('Coffee Corner')),
-                DropdownMenuItem(value: 'bun-bakery', child: Text('Bun & Bakery')),
-                DropdownMenuItem(value: 'burger', child: Text('Burger Station')),
-              ],
-              onChanged: (val) {
-                if (val != null) setState(() => _selectedCategorySlug = val);
-              },
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _priceController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Price (₹)'),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _imageUrlController,
-              decoration: const InputDecoration(labelText: 'Photo URL (Optional)'),
-            ),
-            const SizedBox(height: 10),
-            StatefulBuilder(
-              builder: (context, setModalState) {
-                return SwitchListTile(
+      content: StatefulBuilder(
+        builder: (context, setModalState) {
+          final hasImage = _imageUrlController.text.isNotEmpty;
+
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                // Image Picker Preview Box
+                Container(
+                  height: 120,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: AppColors.secondaryLight,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.secondary),
+                  ),
+                  child: hasImage
+                      ? _buildProductImagePreview(_imageUrlController.text)
+                      : const Center(
+                          child: Icon(Icons.add_a_photo, size: 40, color: AppColors.primary),
+                        ),
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    minimumSize: const Size.fromHeight(40),
+                  ),
+                  icon: const Icon(Icons.photo_library, size: 18),
+                  label: const Text('SELECT FROM MOBILE GALLERY'),
+                  onPressed: () => _pickImageFromGallery(setModalState),
+                ),
+                const SizedBox(height: 12),
+
+                // Name
+                TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(labelText: 'Product Name'),
+                ),
+                const SizedBox(height: 10),
+
+                // Description
+                TextField(
+                  controller: _descController,
+                  decoration: const InputDecoration(labelText: 'Description'),
+                ),
+                const SizedBox(height: 10),
+
+                // Category Dropdown
+                DropdownButtonFormField<String>(
+                  value: _selectedCategorySlug,
+                  decoration: const InputDecoration(labelText: 'Category (Required)'),
+                  items: const [
+                    DropdownMenuItem(value: 'tea', child: Text('Tea Corner')),
+                    DropdownMenuItem(value: 'coffee', child: Text('Coffee Corner')),
+                    DropdownMenuItem(value: 'bun-bakery', child: Text('Bun & Bakery')),
+                    DropdownMenuItem(value: 'burger', child: Text('Burger Station')),
+                  ],
+                  onChanged: (val) {
+                    if (val != null) setModalState(() => _selectedCategorySlug = val);
+                  },
+                ),
+                const SizedBox(height: 10),
+
+                // Price
+                TextField(
+                  controller: _priceController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Price (₹)'),
+                ),
+                const SizedBox(height: 10),
+
+                // Availability Toggle
+                SwitchListTile(
                   title: const Text('Available in Customer Menu'),
                   value: _isAvailable,
                   activeColor: AppColors.primary,
                   onChanged: (val) => setModalState(() => _isAvailable = val),
-                );
-              },
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
       confirm: ElevatedButton(
         onPressed: () => _saveProduct(existingProduct: product),
@@ -193,6 +255,20 @@ class _StaffProductManagementViewState extends State<StaffProductManagementView>
         onPressed: () => Get.back(),
         child: const Text('CANCEL'),
       ),
+    );
+  }
+
+  Widget _buildProductImagePreview(String imageUrl) {
+    if (imageUrl.startsWith('data:image')) {
+      try {
+        final base64Bytes = base64Decode(imageUrl.split(',').last);
+        return Image.memory(base64Bytes, fit: BoxFit.cover);
+      } catch (_) {}
+    }
+    return Image.network(
+      imageUrl,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => const Icon(Icons.fastfood, size: 40, color: AppColors.primary),
     );
   }
 
@@ -226,7 +302,7 @@ class _StaffProductManagementViewState extends State<StaffProductManagementView>
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
           : _products.isEmpty
-              ? const Center(child: Text('No products found. Tap ADD PRODUCT to create one.'))
+              ? const Center(child: Text('No staff products found. Tap ADD PRODUCT to create one.'))
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: _products.length,
@@ -239,12 +315,16 @@ class _StaffProductManagementViewState extends State<StaffProductManagementView>
                         child: Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(10),
+                              width: 50,
+                              height: 50,
                               decoration: BoxDecoration(
                                 color: AppColors.secondaryLight,
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              child: const Icon(Icons.fastfood, color: AppColors.primary, size: 28),
+                              clipBehavior: Clip.antiAlias,
+                              child: product.imageUrl != null && product.imageUrl!.isNotEmpty
+                                  ? _buildProductImagePreview(product.imageUrl!)
+                                  : const Icon(Icons.fastfood, color: AppColors.primary, size: 28),
                             ),
                             const SizedBox(width: 12),
                             Expanded(

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -197,13 +198,15 @@ class MenuView extends StatelessWidget {
                   height: 110,
                   width: double.infinity,
                   color: AppColors.secondaryLight,
-                  child: Center(
-                    child: Icon(
-                      _getCategoryIconByProduct(product),
-                      size: 56,
-                      color: AppColors.primary,
-                    ),
-                  ),
+                  child: product.imageUrl != null && product.imageUrl!.isNotEmpty
+                      ? _buildProductImage(product.imageUrl!)
+                      : Center(
+                          child: Icon(
+                            _getCategoryIconByProduct(product),
+                            size: 56,
+                            color: AppColors.primary,
+                          ),
+                        ),
                 ),
                 Positioned(
                   top: 8,
@@ -279,5 +282,19 @@ class MenuView extends StatelessWidget {
     if (nameLower.contains('bun')) return Icons.bakery_dining;
     if (nameLower.contains('burger')) return Icons.lunch_dining;
     return Icons.local_cafe;
+  }
+
+  static Widget _buildProductImage(String imageUrl) {
+    if (imageUrl.startsWith('data:image')) {
+      try {
+        final base64Bytes = base64Decode(imageUrl.split(',').last);
+        return Image.memory(base64Bytes, fit: BoxFit.cover);
+      } catch (_) {}
+    }
+    return Image.network(
+      imageUrl,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => const Icon(Icons.fastfood, size: 40, color: AppColors.primary),
+    );
   }
 }
