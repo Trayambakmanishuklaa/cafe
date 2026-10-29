@@ -32,7 +32,7 @@ class BookingRepository {
     required String startTime,
     int guestCount = 2,
   }) async {
-    final response = await _apiClient.get('/bookings/availability', queryParameters: {
+    final response = await _apiClient.get('/seats/availability', queryParameters: {
       'date': date,
       'startTime': startTime,
       'guestCount': guestCount.toString(),

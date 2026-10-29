@@ -14,6 +14,7 @@ const bookingsRoutes = require('./modules/bookings/bookings.routes');
 const paymentsRoutes = require('./modules/payments/payments.routes');
 const loyaltyRoutes = require('./modules/loyalty/loyalty.routes');
 const recommendationsRoutes = require('./modules/recommendations/recommendations.routes');
+const seatsRoutes = require('./modules/seats/seats.routes');
 const adminRoutes = require('./modules/admin/admin.routes');
 const staffRoutes = require('./modules/staff/staff.routes');
 const customersRoutes = require('./modules/customers/customers.routes');
@@ -57,6 +58,7 @@ app.use('/api/v1/bookings', bookingsRoutes);
 app.use('/api/v1/payments', paymentsRoutes);
 app.use('/api/v1/loyalty', loyaltyRoutes);
 app.use('/api/v1/recommendations', recommendationsRoutes);
+app.use('/api/v1/seats', seatsRoutes);
 
 // Catch 404
 app.use((req, res, next) => {

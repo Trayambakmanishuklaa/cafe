@@ -185,13 +185,19 @@ model ComboItem {
 }
 
 model CafeTable {
-  id          String      @id @default(auto()) @map("_id") @db.ObjectId
-  tableNumber Int         @unique
-  capacity    Int         @default(4)
-  zone        String      @default("MAIN_HALL")
-  status      TableStatus @default(AVAILABLE)
-  qrCode      String?
-  createdAt   DateTime    @default(now())
+  id               String      @id @default(auto()) @map("_id") @db.ObjectId
+  tableNumber      Int         @unique
+  name             String?
+  capacity         Int         @default(4)
+  description      String?
+  zone             String      @default("MAIN_HALL")
+  status           TableStatus @default(AVAILABLE)
+  manualStatus     String      @default("FREE") // FREE, BOOKED, MAINTENANCE
+  isActive         Boolean     @default(true)
+  createdByStaffId String?     @db.ObjectId
+  qrCode           String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
 
   bookings     Booking[]
   bookingHolds BookingHold[]

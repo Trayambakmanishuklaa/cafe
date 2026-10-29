@@ -6,7 +6,7 @@ import '../../../app/theme/app_colors.dart';
 import '../../auth/controllers/auth_controller.dart';
 import 'staff_order_queue_view.dart';
 import 'staff_product_management_view.dart';
-import '../../booking/views/booking_view.dart';
+import 'staff_seat_management_view.dart';
 
 class StaffMainNavigationView extends StatefulWidget {
   const StaffMainNavigationView({super.key});
@@ -21,7 +21,7 @@ class _StaffMainNavigationViewState extends State<StaffMainNavigationView> {
   final List<Widget> _staffPages = [
     const StaffOverviewTab(),
     const StaffOrderQueueView(),
-    const BookingView(),
+    const StaffSeatManagementView(),
     const StaffProductManagementView(),
   ];
 
@@ -48,17 +48,17 @@ class _StaffMainNavigationViewState extends State<StaffMainNavigationView> {
           BottomNavigationBarItem(
             icon: Icon(Icons.kitchen_outlined),
             activeIcon: Icon(Icons.kitchen),
-            label: 'Kitchen Queue',
+            label: 'Kitchen',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.qr_code_scanner_outlined),
-            activeIcon: Icon(Icons.qr_code_scanner),
-            label: 'Seat Check-In',
+            icon: Icon(Icons.table_restaurant_outlined),
+            activeIcon: Icon(Icons.table_restaurant),
+            label: 'Seats Mgmt',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.inventory_2_outlined),
             activeIcon: Icon(Icons.inventory_2),
-            label: 'Product Mgmt',
+            label: 'Products',
           ),
         ],
       ),
