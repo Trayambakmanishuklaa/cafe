@@ -20,8 +20,8 @@ class TableModel {
   factory TableModel.fromJson(Map<String, dynamic> json) {
     return TableModel(
       id: json['id'] ?? '',
-      tableNumber: json['tableNumber'] ?? 0,
-      capacity: json['capacity'] ?? 2,
+      tableNumber: (json['tableNumber'] as num?)?.toInt() ?? 0,
+      capacity: (json['capacity'] as num?)?.toInt() ?? 2,
       zone: json['zone'] ?? 'MAIN_HALL',
       status: json['status'] ?? 'AVAILABLE',
       isAvailable: json['isAvailable'] ?? true,

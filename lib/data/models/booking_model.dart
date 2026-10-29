@@ -33,7 +33,7 @@ class BookingModel {
       bookingCode: json['bookingCode'] ?? '',
       tableId: json['tableId'] ?? '',
       table: json['table'] != null ? TableModel.fromJson(json['table']) : null,
-      guestCount: json['guestCount'] ?? 1,
+      guestCount: (json['guestCount'] as num?)?.toInt() ?? 1,
       bookingDate: json['bookingDate'] != null ? DateTime.parse(json['bookingDate']) : DateTime.now(),
       startTime: json['startTime'] ?? '12:00',
       endTime: json['endTime'] ?? '13:00',

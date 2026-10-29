@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../app/core/errors/error_utils.dart';
 import '../../../app/core/storage/storage_service.dart';
 import '../../../app/routes/app_routes.dart';
 import '../../../data/models/user_model.dart';
@@ -58,13 +59,15 @@ class AuthController extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      final res = await _authRepository.login(
+      final dynamic res = await _authRepository.login(
         emailController.text.trim(),
         passwordController.text.trim(),
       );
 
-      final token = res['token'] as String;
-      final user = UserModel.fromJson(res['user']);
+      final map = res is Map ? Map<String, dynamic>.from(res) : <String, dynamic>{};
+      final token = map['token']?.toString() ?? '';
+      final userMap = map['user'] is Map ? Map<String, dynamic>.from(map['user']) : <String, dynamic>{};
+      final user = UserModel.fromJson(userMap);
 
       await _storageService.saveToken(token);
       await _storageService.saveUserRaw(user.toRawJson());
@@ -72,9 +75,7 @@ class AuthController extends GetxController {
 
       Get.offAllNamed(AppRoutes.NAVIGATION);
     } catch (e) {
-      errorMessage.value = e is DioException
-          ? (e.error?.toString() ?? e.message ?? 'Connection error')
-          : e.toString();
+      errorMessage.value = ErrorUtils.getCleanMessage(e);
       Get.snackbar('Login Failed', errorMessage.value,
           backgroundColor: Colors.red.withOpacity(0.1), colorText: Colors.red);
     } finally {
@@ -95,7 +96,7 @@ class AuthController extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      final res = await _authRepository.register(
+      final dynamic res = await _authRepository.register(
         name: nameController.text.trim(),
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
@@ -103,8 +104,10 @@ class AuthController extends GetxController {
         role: selectedRole.value,
       );
 
-      final token = res['token'] as String;
-      final user = UserModel.fromJson(res['user']);
+      final map = res is Map ? Map<String, dynamic>.from(res) : <String, dynamic>{};
+      final token = map['token']?.toString() ?? '';
+      final userMap = map['user'] is Map ? Map<String, dynamic>.from(map['user']) : <String, dynamic>{};
+      final user = UserModel.fromJson(userMap);
 
       await _storageService.saveToken(token);
       await _storageService.saveUserRaw(user.toRawJson());
@@ -112,9 +115,7 @@ class AuthController extends GetxController {
 
       Get.offAllNamed(AppRoutes.NAVIGATION);
     } catch (e) {
-      errorMessage.value = e is DioException
-          ? (e.error?.toString() ?? e.message ?? 'Connection error')
-          : e.toString();
+      errorMessage.value = ErrorUtils.getCleanMessage(e);
       Get.snackbar('Registration Failed', errorMessage.value,
           backgroundColor: Colors.red.withOpacity(0.1), colorText: Colors.red);
     } finally {

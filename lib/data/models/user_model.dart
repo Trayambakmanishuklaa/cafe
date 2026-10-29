@@ -19,15 +19,24 @@ class UserModel {
     this.membershipTier = 'BRONZE',
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
+  factory UserModel.fromJson(dynamic json) {
+    if (json is! Map) {
+      return UserModel(
+        id: '',
+        name: '',
+        email: '',
+        role: 'CUSTOMER',
+      );
+    }
+    final map = Map<String, dynamic>.from(json);
     return UserModel(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-      email: json['email'] ?? '',
-      phone: json['phone'],
-      role: json['role'] ?? 'CUSTOMER',
-      loyaltyPoints: json['loyaltyPoints'] ?? 0,
-      membershipTier: json['membershipTier'] ?? 'BRONZE',
+      id: map['id']?.toString() ?? '',
+      name: map['name']?.toString() ?? '',
+      email: map['email']?.toString() ?? '',
+      phone: map['phone']?.toString(),
+      role: map['role']?.toString() ?? 'CUSTOMER',
+      loyaltyPoints: int.tryParse(map['loyaltyPoints']?.toString() ?? '0') ?? 0,
+      membershipTier: map['membershipTier']?.toString() ?? 'BRONZE',
     );
   }
 

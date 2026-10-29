@@ -6,12 +6,23 @@ class AuthRepository {
 
   AuthRepository(this._apiClient);
 
+  Map<String, dynamic> _extractDataMap(dynamic responseData) {
+    if (responseData is Map) {
+      final data = responseData['data'];
+      if (data is Map) {
+        return Map<String, dynamic>.from(data);
+      }
+      return Map<String, dynamic>.from(responseData);
+    }
+    return <String, dynamic>{};
+  }
+
   Future<Map<String, dynamic>> login(String email, String password) async {
     final response = await _apiClient.post('/auth/login', data: {
       'email': email,
       'password': password,
     });
-    return response.data['data'];
+    return _extractDataMap(response.data);
   }
 
   Future<Map<String, dynamic>> register({
@@ -28,11 +39,13 @@ class AuthRepository {
       'phone': phone,
       'role': role,
     });
-    return response.data['data'];
+    return _extractDataMap(response.data);
   }
 
   Future<UserModel> getProfile() async {
     final response = await _apiClient.get('/auth/me');
-    return UserModel.fromJson(response.data['data']['user']);
+    final map = _extractDataMap(response.data);
+    final userJson = map['user'] ?? map;
+    return UserModel.fromJson(userJson);
   }
 }

@@ -7,9 +7,19 @@ class MenuRepository {
 
   MenuRepository(this._apiClient);
 
+  List<dynamic> _extractList(dynamic responseData) {
+    if (responseData is Map && responseData['data'] is List) {
+      return responseData['data'] as List<dynamic>;
+    }
+    if (responseData is List) {
+      return responseData;
+    }
+    return <dynamic>[];
+  }
+
   Future<List<CategoryModel>> getCategories() async {
     final response = await _apiClient.get('/categories');
-    final List<dynamic> list = response.data['data'];
+    final list = _extractList(response.data);
     return list.map((json) => CategoryModel.fromJson(json)).toList();
   }
 
@@ -23,7 +33,7 @@ class MenuRepository {
     }
 
     final response = await _apiClient.get('/products', queryParameters: query);
-    final List<dynamic> list = response.data['data'];
+    final list = _extractList(response.data);
     return list.map((json) => ProductModel.fromJson(json)).toList();
   }
 }

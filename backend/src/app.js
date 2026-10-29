@@ -15,6 +15,8 @@ const paymentsRoutes = require('./modules/payments/payments.routes');
 const loyaltyRoutes = require('./modules/loyalty/loyalty.routes');
 const recommendationsRoutes = require('./modules/recommendations/recommendations.routes');
 const adminRoutes = require('./modules/admin/admin.routes');
+const staffRoutes = require('./modules/staff/staff.routes');
+const customersRoutes = require('./modules/customers/customers.routes');
 
 const app = express();
 
@@ -56,6 +58,8 @@ app.use('/api/v1/payments', paymentsRoutes);
 app.use('/api/v1/loyalty', loyaltyRoutes);
 app.use('/api/v1/recommendations', recommendationsRoutes);
 app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/admin/staff', staffRoutes);
+app.use('/api/v1/admin/customers', customersRoutes);
 
 // Catch 404
 app.use((req, res, next) => {

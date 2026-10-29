@@ -1,6 +1,6 @@
 class ApiConstants {
-  // Use 10.0.2.2 for Android Emulator, localhost for iOS simulator, or live Render URL
-  static const String baseUrl = 'http:// 192.168.1.7/api/v1';
+  // Live Render Backend URL
+  static const String baseUrl = 'https://cafe-6jer.onrender.com/api/v1';
 
   // Auth Endpoints
   static const String register = '$baseUrl/auth/register';

@@ -6,6 +6,26 @@ class OrderRepository {
 
   OrderRepository(this._apiClient);
 
+  Map<String, dynamic> _extractMap(dynamic responseData) {
+    if (responseData is Map) {
+      if (responseData['data'] is Map) {
+        return Map<String, dynamic>.from(responseData['data']);
+      }
+      return Map<String, dynamic>.from(responseData);
+    }
+    return <String, dynamic>{};
+  }
+
+  List<dynamic> _extractList(dynamic responseData) {
+    if (responseData is Map && responseData['data'] is List) {
+      return responseData['data'] as List<dynamic>;
+    }
+    if (responseData is List) {
+      return responseData;
+    }
+    return <dynamic>[];
+  }
+
   Future<OrderModel> createOrder({
     required String orderType,
     String? tableId,
@@ -20,18 +40,18 @@ class OrderRepository {
       'couponCode': couponCode,
       'items': items,
     });
-    return OrderModel.fromJson(response.data['data']);
+    return OrderModel.fromJson(_extractMap(response.data));
   }
 
   Future<List<OrderModel>> getMyOrders() async {
     final response = await _apiClient.get('/orders/my');
-    final List<dynamic> list = response.data['data'];
+    final list = _extractList(response.data);
     return list.map((json) => OrderModel.fromJson(json)).toList();
   }
 
   Future<List<OrderModel>> getStaffQueue() async {
     final response = await _apiClient.get('/orders/staff/queue');
-    final List<dynamic> list = response.data['data'];
+    final list = _extractList(response.data);
     return list.map((json) => OrderModel.fromJson(json)).toList();
   }
 
@@ -39,6 +59,6 @@ class OrderRepository {
     final response = await _apiClient.patch('/orders/$orderId/status', data: {
       'status': status,
     });
-    return OrderModel.fromJson(response.data['data']);
+    return OrderModel.fromJson(_extractMap(response.data));
   }
 }

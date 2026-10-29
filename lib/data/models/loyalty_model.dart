@@ -20,7 +20,7 @@ class RewardModel {
       id: json['id'] ?? '',
       title: json['title'] ?? '',
       description: json['description'] ?? '',
-      pointsCost: json['pointsCost'] ?? 100,
+      pointsCost: (json['pointsCost'] as num?)?.toInt() ?? 100,
       discountAmount: (json['discountAmount'] as num?)?.toDouble() ?? 0.0,
       rewardType: json['rewardType'] ?? 'DISCOUNT_FLAT',
     );
@@ -46,7 +46,7 @@ class LoyaltyTransactionModel {
     return LoyaltyTransactionModel(
       id: json['id'] ?? '',
       type: json['type'] ?? 'EARN',
-      points: json['points'] ?? 0,
+      points: (json['points'] as num?)?.toInt() ?? 0,
       description: json['description'] ?? '',
       createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(),
     );
@@ -76,10 +76,10 @@ class PassportDataModel {
         [];
 
     return PassportDataModel(
-      pointsBalance: account['pointsBalance'] ?? 0,
+      pointsBalance: (account['pointsBalance'] as num?)?.toInt() ?? 0,
       tier: account['tier'] ?? 'BRONZE',
-      lifetimePoints: account['lifetimePoints'] ?? 0,
-      stampsCount: account['stampsCount'] ?? 0,
+      lifetimePoints: (account['lifetimePoints'] as num?)?.toInt() ?? 0,
+      stampsCount: (account['stampsCount'] as num?)?.toInt() ?? 0,
       transactions: txList,
     );
   }

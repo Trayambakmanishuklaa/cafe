@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../app/core/errors/error_utils.dart';
 import '../../../app/routes/app_routes.dart';
 import '../../../data/models/cart_item_model.dart';
 import '../../../data/models/order_model.dart';
@@ -102,7 +103,7 @@ class CartController extends GetxController {
       clearCart();
       return order;
     } catch (e) {
-      Get.snackbar('Order Failed', e.toString(),
+      Get.snackbar('Order Failed', ErrorUtils.getCleanMessage(e),
           backgroundColor: Colors.red.withOpacity(0.1), colorText: Colors.red);
       return null;
     } finally {

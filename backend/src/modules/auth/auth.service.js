@@ -64,6 +64,10 @@ class AuthService {
 
     const token = this.generateToken(user);
 
+    const loyaltyAccount = await prisma.loyaltyAccount.findUnique({
+      where: { userId: user.id },
+    });
+
     return {
       user: {
         id: user.id,
@@ -71,6 +75,8 @@ class AuthService {
         email: user.email,
         phone: user.phone,
         role: user.role,
+        loyaltyPoints: loyaltyAccount?.pointsBalance || 100,
+        membershipTier: loyaltyAccount?.tier || 'BRONZE',
       },
       token,
     };

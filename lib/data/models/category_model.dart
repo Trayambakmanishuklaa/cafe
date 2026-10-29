@@ -22,7 +22,7 @@ class CategoryModel {
       slug: json['slug'] ?? '',
       description: json['description'],
       icon: json['icon'],
-      sortOrder: json['sortOrder'] ?? 0,
+      sortOrder: (json['sortOrder'] as num?)?.toInt() ?? 0,
     );
   }
 }

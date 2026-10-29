@@ -32,9 +32,9 @@ class ProductModel {
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       imageUrl: json['imageUrl'],
       isAvailable: json['isAvailable'] ?? true,
-      stockCount: json['stockCount'] ?? 100,
+      stockCount: (json['stockCount'] as num?)?.toInt() ?? 100,
       isVeg: json['isVeg'] ?? true,
-      prepTimeMinutes: json['prepTimeMinutes'] ?? 10,
+      prepTimeMinutes: (json['prepTimeMinutes'] as num?)?.toInt() ?? 10,
     );
   }
 }

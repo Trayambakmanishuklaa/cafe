@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../../app/core/errors/error_utils.dart';
 import '../../../data/models/booking_model.dart';
 import '../../../data/models/table_model.dart';
 import '../../../data/repositories/booking_repository.dart';
@@ -46,7 +47,7 @@ class BookingController extends GetxController {
       );
       tables.assignAll(result);
     } catch (e) {
-      Get.snackbar('Availability Error', e.toString());
+      Get.snackbar('Availability Error', ErrorUtils.getCleanMessage(e));
     } finally {
       isLoading.value = false;
     }
@@ -75,7 +76,7 @@ class BookingController extends GetxController {
       Get.snackbar('Seat Held', 'Table #${table.tableNumber} held for 5 minutes!',
           backgroundColor: Colors.green.withOpacity(0.1), colorText: Colors.green);
     } catch (e) {
-      Get.snackbar('Hold Failed', e.toString());
+      Get.snackbar('Hold Failed', ErrorUtils.getCleanMessage(e));
     }
   }
 
@@ -103,7 +104,7 @@ class BookingController extends GetxController {
       fetchAvailability();
       return booking;
     } catch (e) {
-      Get.snackbar('Booking Error', e.toString(),
+      Get.snackbar('Booking Error', ErrorUtils.getCleanMessage(e),
           backgroundColor: Colors.red.withOpacity(0.1), colorText: Colors.red);
       return null;
     } finally {

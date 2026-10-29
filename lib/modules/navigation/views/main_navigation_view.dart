@@ -7,6 +7,8 @@ import '../../home/views/home_view.dart';
 import '../../menu/views/menu_view.dart';
 import '../../booking/views/booking_view.dart';
 import '../../loyalty/views/passport_view.dart';
+import '../../staff/views/staff_main_navigation_view.dart';
+import '../../owner/views/owner_main_navigation_view.dart';
 
 class MainNavigationView extends StatefulWidget {
   const MainNavigationView({super.key});
@@ -32,6 +34,16 @@ class _MainNavigationViewState extends State<MainNavigationView> {
     return Obx(() {
       final user = authController.currentUser.value;
 
+      // Role-Based Separate Dashboard Navigation
+      if (user?.isOwner == true) {
+        return const OwnerMainNavigationView();
+      }
+
+      if (user?.isStaff == true) {
+        return const StaffMainNavigationView();
+      }
+
+      // Customer Navigation Shell
       return Scaffold(
         body: IndexedStack(
           index: _currentIndex,

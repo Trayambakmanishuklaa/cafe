@@ -18,7 +18,7 @@ class OrderItemModel {
       id: json['id'] ?? '',
       productName: json['productName'] ?? '',
       unitPrice: (json['unitPrice'] as num?)?.toDouble() ?? 0.0,
-      quantity: json['quantity'] ?? 1,
+      quantity: (json['quantity'] as num?)?.toInt() ?? 1,
       subtotal: (json['subtotal'] as num?)?.toDouble() ?? 0.0,
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../app/core/errors/error_utils.dart';
 import '../../../data/models/loyalty_model.dart';
 import '../../../data/repositories/loyalty_repository.dart';
 
@@ -26,7 +27,7 @@ class PassportController extends GetxController {
       final rList = await _repository.getRewards();
       rewards.assignAll(rList);
     } catch (e) {
-      Get.snackbar('Passport Error', e.toString());
+      Get.snackbar('Passport Error', ErrorUtils.getCleanMessage(e));
     } finally {
       isLoading.value = false;
     }
@@ -44,7 +45,7 @@ class PassportController extends GetxController {
           backgroundColor: Colors.green.withOpacity(0.1), colorText: Colors.green);
       fetchPassportAndRewards();
     } catch (e) {
-      Get.snackbar('Redeem Failed', e.toString());
+      Get.snackbar('Redeem Failed', ErrorUtils.getCleanMessage(e));
     }
   }
 }
