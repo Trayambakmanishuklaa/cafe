@@ -4,22 +4,7 @@ const prisma = require('./prisma');
 async function main() {
   console.log('🌱 Starting Database Seeding...');
 
-  // 1. Create Default Owner Account
-  const ownerPasswordHash = await bcrypt.hash('Owner@123', 10);
-  const owner = await prisma.user.upsert({
-    where: { email: 'owner@cafe.com' },
-    update: {},
-    create: {
-      email: 'owner@cafe.com',
-      passwordHash: ownerPasswordHash,
-      name: 'Cafe Owner',
-      phone: '9876543210',
-      role: 'OWNER',
-    },
-  });
-  console.log('✅ Owner Account Seeded: owner@cafe.com / Owner@123');
-
-  // 2. Create Default Staff Account
+  // 1. Create Default Staff Account
   const staffPasswordHash = await bcrypt.hash('Staff@123', 10);
   const staff = await prisma.user.upsert({
     where: { email: 'staff@cafe.com' },
@@ -33,6 +18,21 @@ async function main() {
     },
   });
   console.log('✅ Staff Account Seeded: staff@cafe.com / Staff@123');
+
+  // 2. Create Default Customer Account
+  const customerPasswordHash = await bcrypt.hash('Customer@123', 10);
+  const customer = await prisma.user.upsert({
+    where: { email: 'customer@cafe.com' },
+    update: {},
+    create: {
+      email: 'customer@cafe.com',
+      passwordHash: customerPasswordHash,
+      name: 'Regular Customer',
+      phone: '9876543212',
+      role: 'CUSTOMER',
+    },
+  });
+  console.log('✅ Customer Account Seeded: customer@cafe.com / Customer@123');
 
   // 3. Create Default Categories (Strictly 4 as per prompt rules)
   const categoriesData = [

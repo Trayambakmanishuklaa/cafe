@@ -5,8 +5,8 @@ import '../../../app/core/network/api_client.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../auth/controllers/auth_controller.dart';
 import 'staff_order_queue_view.dart';
+import 'staff_product_management_view.dart';
 import '../../booking/views/booking_view.dart';
-import '../../menu/views/menu_view.dart';
 
 class StaffMainNavigationView extends StatefulWidget {
   const StaffMainNavigationView({super.key});
@@ -22,7 +22,7 @@ class _StaffMainNavigationViewState extends State<StaffMainNavigationView> {
     const StaffOverviewTab(),
     const StaffOrderQueueView(),
     const BookingView(),
-    const MenuView(),
+    const StaffProductManagementView(),
   ];
 
   @override
@@ -58,7 +58,7 @@ class _StaffMainNavigationViewState extends State<StaffMainNavigationView> {
           BottomNavigationBarItem(
             icon: Icon(Icons.inventory_2_outlined),
             activeIcon: Icon(Icons.inventory_2),
-            label: 'Stock Menu',
+            label: 'Product Mgmt',
           ),
         ],
       ),

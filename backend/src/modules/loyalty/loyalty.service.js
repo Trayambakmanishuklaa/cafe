@@ -13,6 +13,33 @@ class LoyaltyService {
       },
     });
 
+    // Calculate completed Tea orders
+    const teaCategory = await prisma.category.findFirst({
+      where: { slug: 'tea' },
+    });
+
+    let completedTeaOrdersCount = 0;
+    if (teaCategory) {
+      const userTeaOrders = await prisma.order.findMany({
+        where: {
+          userId,
+          status: 'COMPLETED',
+          paymentStatus: 'PAID',
+          items: {
+            some: {
+              product: {
+                categoryId: teaCategory.id,
+              },
+            },
+          },
+        },
+      });
+      completedTeaOrdersCount = userTeaOrders.length;
+    }
+
+    const teaOrdersProgress = completedTeaOrdersCount % 4;
+    const earnedFreeTeaRewards = Math.floor(completedTeaOrdersCount / 4);
+
     const achievements = await prisma.customerAchievement.findMany({
       where: { userId },
       include: { achievement: true },
@@ -23,13 +50,12 @@ class LoyaltyService {
       include: { reward: true },
     });
 
-    const profile = await prisma.customerProfile.findUnique({
-      where: { userId },
-    });
-
     return {
       account,
-      profile,
+      completedTeaOrdersCount,
+      teaOrdersProgress,
+      progressText: `${teaOrdersProgress}/4 Tea orders completed`,
+      earnedFreeTeaRewards,
       achievements,
       activeRedemptions,
     };

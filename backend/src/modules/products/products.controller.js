@@ -13,6 +13,18 @@ class ProductsController {
     }
   }
 
+  static async getAllForStaff(req, res, next) {
+    try {
+      const products = await ProductsService.getAllForStaff();
+      res.status(200).json({
+        success: true,
+        data: products,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async getById(req, res, next) {
     try {
       const product = await ProductsService.getById(req.params.id);
@@ -22,6 +34,45 @@ class ProductsController {
       res.status(200).json({
         success: true,
         data: product,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async createProduct(req, res, next) {
+    try {
+      const product = await ProductsService.createProduct(req.body);
+      res.status(201).json({
+        success: true,
+        message: 'Product added successfully',
+        data: product,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async updateProduct(req, res, next) {
+    try {
+      const updated = await ProductsService.updateProduct(req.params.id, req.body);
+      res.status(200).json({
+        success: true,
+        message: 'Product updated successfully',
+        data: updated,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async toggleAvailability(req, res, next) {
+    try {
+      const updated = await ProductsService.toggleAvailability(req.params.id, req.body.isAvailable);
+      res.status(200).json({
+        success: true,
+        message: 'Product availability updated',
+        data: updated,
       });
     } catch (error) {
       next(error);
