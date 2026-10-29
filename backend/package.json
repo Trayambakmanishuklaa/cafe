@@ -4,7 +4,7 @@
   "description": "Full-Stack Cafe Management & Customer Loyalty REST API Backend",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "npx prisma generate && npx prisma db push && node src/server.js",
     "dev": "nodemon src/server.js",
     "prisma:generate": "node node_modules/prisma/build/index.js generate",
     "prisma:migrate": "prisma migrate dev",
