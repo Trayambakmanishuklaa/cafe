@@ -35,7 +35,7 @@ class _StaffProductManagementViewState extends State<StaffProductManagementView>
 
   @override
   void initState() {
-    super.override();
+    super.initState();
     _fetchProducts();
   }
 
@@ -73,7 +73,7 @@ class _StaffProductManagementViewState extends State<StaffProductManagementView>
         });
 
         Get.snackbar('Photo Selected', 'Image selected from gallery successfully!',
-            backgroundColor: Colors.green.withOpacity(0.1), colorText: Colors.green);
+            backgroundColor: const Color(0x1A4CAF50), colorText: Colors.green);
       }
     } catch (e) {
       Get.snackbar('Image Picker Error', e.toString());
@@ -121,12 +121,12 @@ class _StaffProductManagementViewState extends State<StaffProductManagementView>
         // Create Product
         await _apiClient.post('/products', data: payload);
         Get.snackbar('Product Added', 'New product added to customer menu!',
-            backgroundColor: Colors.green.withOpacity(0.1), colorText: Colors.green);
+            backgroundColor: const Color(0x1A4CAF50), colorText: Colors.green);
       } else {
         // Edit Product
         await _apiClient.patch('/products/${existingProduct.id}', data: payload);
         Get.snackbar('Product Updated', 'Product updated successfully!',
-            backgroundColor: Colors.green.withOpacity(0.1), colorText: Colors.green);
+            backgroundColor: const Color(0x1A4CAF50), colorText: Colors.green);
       }
 
       Get.back(); // close modal
@@ -213,7 +213,7 @@ class _StaffProductManagementViewState extends State<StaffProductManagementView>
 
                 // Category Dropdown
                 DropdownButtonFormField<String>(
-                  value: _selectedCategorySlug,
+                  initialValue: _selectedCategorySlug,
                   decoration: const InputDecoration(labelText: 'Category (Required)'),
                   items: const [
                     DropdownMenuItem(value: 'tea', child: Text('Tea Corner')),
@@ -239,7 +239,7 @@ class _StaffProductManagementViewState extends State<StaffProductManagementView>
                 SwitchListTile(
                   title: const Text('Available in Customer Menu'),
                   value: _isAvailable,
-                  activeColor: AppColors.primary,
+                  activeThumbColor: AppColors.primary,
                   onChanged: (val) => setModalState(() => _isAvailable = val),
                 ),
               ],
@@ -268,7 +268,7 @@ class _StaffProductManagementViewState extends State<StaffProductManagementView>
     return Image.network(
       imageUrl,
       fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => const Icon(Icons.fastfood, size: 40, color: AppColors.primary),
+      errorBuilder: (context, error, stackTrace) => const Icon(Icons.fastfood, size: 40, color: AppColors.primary),
     );
   }
 
@@ -342,7 +342,7 @@ class _StaffProductManagementViewState extends State<StaffProductManagementView>
                             ),
                             Switch(
                               value: product.isAvailable,
-                              activeColor: AppColors.primary,
+                              activeThumbColor: AppColors.primary,
                               onChanged: (val) => _toggleAvailability(product, val),
                             ),
                             IconButton(
