@@ -126,7 +126,7 @@ class HomeView extends StatelessWidget {
                             const Icon(Icons.stars, color: AppColors.secondary, size: 28),
                             const SizedBox(width: 8),
                             Text(
-                              '${passport?.account?.pointsBalance ?? user?.loyaltyPoints ?? 100} PTS',
+                              '${passport?.pointsBalance ?? user?.loyaltyPoints ?? 100} PTS',
                               style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
                             ),
                           ],
@@ -135,7 +135,7 @@ class HomeView extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(color: AppColors.secondary, borderRadius: BorderRadius.circular(12)),
                           child: Text(
-                            passport?.account?.tier ?? user?.membershipTier ?? 'BRONZE',
+                            passport?.tier ?? user?.membershipTier ?? 'BRONZE',
                             style: const TextStyle(color: AppColors.primaryDark, fontWeight: FontWeight.bold, fontSize: 11),
                           ),
                         ),

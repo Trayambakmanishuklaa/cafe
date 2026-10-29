@@ -58,6 +58,10 @@ class PassportDataModel {
   final String tier;
   final int lifetimePoints;
   final int stampsCount;
+  final int completedTeaOrdersCount;
+  final int teaOrdersProgress;
+  final String progressText;
+  final int earnedFreeTeaRewards;
   final List<LoyaltyTransactionModel> transactions;
 
   PassportDataModel({
@@ -65,6 +69,10 @@ class PassportDataModel {
     required this.tier,
     required this.lifetimePoints,
     required this.stampsCount,
+    required this.completedTeaOrdersCount,
+    required this.teaOrdersProgress,
+    required this.progressText,
+    required this.earnedFreeTeaRewards,
     required this.transactions,
   });
 
@@ -75,11 +83,17 @@ class PassportDataModel {
             .toList() ??
         [];
 
+    final teaProgress = (json['teaOrdersProgress'] as num?)?.toInt() ?? 0;
+
     return PassportDataModel(
       pointsBalance: (account['pointsBalance'] as num?)?.toInt() ?? 0,
-      tier: account['tier'] ?? 'BRONZE',
+      tier: account['tier']?.toString() ?? 'BRONZE',
       lifetimePoints: (account['lifetimePoints'] as num?)?.toInt() ?? 0,
       stampsCount: (account['stampsCount'] as num?)?.toInt() ?? 0,
+      completedTeaOrdersCount: (json['completedTeaOrdersCount'] as num?)?.toInt() ?? 0,
+      teaOrdersProgress: teaProgress,
+      progressText: json['progressText']?.toString() ?? '$teaProgress/4 Tea orders completed',
+      earnedFreeTeaRewards: (json['earnedFreeTeaRewards'] as num?)?.toInt() ?? 0,
       transactions: txList,
     );
   }
