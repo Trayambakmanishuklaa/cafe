@@ -80,7 +80,7 @@ class BookingController extends GetxController {
     }
   }
 
-  Future<BookingModel?> confirmBooking() async {
+  Future<BookingModel?> confirmBooking({String paymentMethod = 'UPI'}) async {
     if (selectedTable.value == null) {
       Get.snackbar('Select Table', 'Please tap on an available table first');
       return null;
@@ -98,6 +98,7 @@ class BookingController extends GetxController {
         bookingDate: formattedSelectedDate,
         startTime: selectedTimeSlot.value,
         endTime: endTime,
+        paymentMethod: paymentMethod,
       );
 
       fetchMyBookings();

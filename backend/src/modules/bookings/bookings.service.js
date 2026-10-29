@@ -25,7 +25,7 @@ class BookingsService {
     const existingBookings = await prisma.booking.findMany({
       where: {
         bookingDate: parsedDate,
-        status: { in: ['CONFIRMED', 'PENDING', 'CHECKED_IN'] },
+        status: { in: ['CONFIRMED', 'CHECKED_IN'] },
       },
     });
 
@@ -56,7 +56,7 @@ class BookingsService {
         where: {
           tableId,
           bookingDate: parsedDate,
-          status: { in: ['CONFIRMED', 'PENDING', 'CHECKED_IN'] },
+          status: { in: ['CONFIRMED', 'CHECKED_IN'] },
         },
       });
 
@@ -64,7 +64,7 @@ class BookingsService {
         throw new ApiError(409, 'This table is already reserved for the selected time slot.');
       }
 
-      // 2. Check active hold overlap
+      // 2. Check active hold overlap from another user
       const overlapHold = await tx.bookingHold.findFirst({
         where: {
           tableId,
@@ -78,7 +78,9 @@ class BookingsService {
         throw new ApiError(409, 'This table is temporarily held by another customer.');
       }
 
-      // 3. Create 5-minute temporary hold
+      // 3. Create or refresh 5-minute temporary hold
+      await tx.bookingHold.deleteMany({ where: { tableId, userId } });
+
       const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
       return await tx.bookingHold.create({
         data: {
@@ -93,18 +95,19 @@ class BookingsService {
     });
   }
 
-  static async createBooking(userId, { tableId, guestCount, bookingDate, startTime, endTime }) {
+  static async confirmBookingWithPayment(userId, { tableId, guestCount, bookingDate, startTime, endTime, paymentMethod }) {
     const parsedDate = new Date(bookingDate);
     const bookingCode = `SEAT-${Math.floor(100000 + Math.random() * 900000)}`;
     const qrCode = `CAFE_BOOKING_${bookingCode}`;
+    const bookingFee = 50.0; // ₹50 advance seat deposit
 
     return await prisma.$transaction(async (tx) => {
-      // Re-validate availability atomically
+      // Re-validate availability
       const existingBooking = await tx.booking.findFirst({
         where: {
           tableId,
           bookingDate: parsedDate,
-          status: { in: ['CONFIRMED', 'PENDING', 'CHECKED_IN'] },
+          status: { in: ['CONFIRMED', 'CHECKED_IN'] },
         },
       });
 
@@ -112,7 +115,20 @@ class BookingsService {
         throw new ApiError(409, 'Double Booking Prevented: Table is already confirmed for another user.');
       }
 
-      // Create confirmed booking
+      // Create Payment record for advance deposit
+      const transactionRef = `DEP-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+      const payment = await tx.payment.create({
+        data: {
+          userId,
+          amount: bookingFee,
+          paymentMethod: paymentMethod || 'UPI',
+          transactionRef,
+          status: 'SUCCESS', // Confirmed payment
+        },
+      });
+
+      // Create Confirmed Booking record
       const booking = await tx.booking.create({
         data: {
           bookingCode,
@@ -123,8 +139,8 @@ class BookingsService {
           startTime,
           endTime,
           status: 'CONFIRMED',
-          bookingFee: 50.0, // Fixed seat reservation fee
-          depositAmount: 50.0,
+          bookingFee,
+          depositAmount: bookingFee,
           qrCode,
         },
         include: {
@@ -133,7 +149,13 @@ class BookingsService {
         },
       });
 
-      // Clear any temporary holds for this user
+      // Link payment to booking
+      await tx.payment.update({
+        where: { id: payment.id },
+        data: { bookingId: booking.id },
+      });
+
+      // Clear hold
       await tx.bookingHold.deleteMany({
         where: { tableId, userId },
       });

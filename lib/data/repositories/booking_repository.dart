@@ -61,6 +61,7 @@ class BookingRepository {
     required String bookingDate,
     required String startTime,
     required String endTime,
+    String paymentMethod = 'UPI',
   }) async {
     final response = await _apiClient.post('/bookings', data: {
       'tableId': tableId,
@@ -68,6 +69,7 @@ class BookingRepository {
       'bookingDate': bookingDate,
       'startTime': startTime,
       'endTime': endTime,
+      'paymentMethod': paymentMethod,
     });
     return BookingModel.fromJson(_extractMap(response.data));
   }

@@ -171,20 +171,83 @@ class BookingView extends StatelessWidget {
             () => ElevatedButton(
               onPressed: controller.selectedTable.value == null || controller.isConfirming.value
                   ? null
-                  : () async {
-                      final booking = await controller.confirmBooking();
-                      if (booking != null) {
-                        _showQRPassModal(booking);
-                      }
-                    },
+                  : () => _showPaymentSheet(context, controller),
               child: controller.isConfirming.value
                   ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                   : Text(controller.selectedTable.value != null
-                      ? 'CONFIRM TABLE #${controller.selectedTable.value!.tableNumber} (₹50 Fee)'
+                      ? 'PAY ₹50 DEPOSIT & RESERVE TABLE #${controller.selectedTable.value!.tableNumber}'
                       : 'TAP A TABLE TO RESERVE'),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showPaymentSheet(BuildContext context, BookingController controller) {
+    String selectedPaymentMethod = 'UPI';
+
+    Get.bottomSheet(
+      StatefulBuilder(
+        builder: (context, setModalState) {
+          return Container(
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Seat Deposit Payment', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                    IconButton(icon: const Icon(Icons.close), onPressed: () => Get.back()),
+                  ],
+                ),
+                const Divider(),
+                Text('Table #${controller.selectedTable.value?.tableNumber} • ${controller.guestCount.value} Guests'),
+                const Text('Advance Deposit Fee: ₹50.00', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.primary)),
+                const SizedBox(height: 16),
+                const Text('Select Payment Method', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                const SizedBox(height: 8),
+                RadioListTile<String>(
+                  value: 'UPI',
+                  groupValue: selectedPaymentMethod,
+                  activeColor: AppColors.primary,
+                  onChanged: (val) {
+                    if (val != null) setModalState(() => selectedPaymentMethod = val);
+                  },
+                  title: const Text('UPI (Google Pay, PhonePe, Paytm)', style: TextStyle(fontSize: 14)),
+                  secondary: const Icon(Icons.qr_code_2, color: AppColors.primary),
+                ),
+                RadioListTile<String>(
+                  value: 'CARD',
+                  groupValue: selectedPaymentMethod,
+                  activeColor: AppColors.primary,
+                  onChanged: (val) {
+                    if (val != null) setModalState(() => selectedPaymentMethod = val);
+                  },
+                  title: const Text('Credit / Debit Card', style: TextStyle(fontSize: 14)),
+                  secondary: const Icon(Icons.credit_card, color: AppColors.primary),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () async {
+                    Get.back(); // close sheet
+                    final booking = await controller.confirmBooking(paymentMethod: selectedPaymentMethod);
+                    if (booking != null) {
+                      _showQRPassModal(booking);
+                    }
+                  },
+                  child: const Text('PAY ₹50 & CONFIRM RESERVATION'),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

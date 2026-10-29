@@ -40,10 +40,10 @@ class BookingsController {
 
   static async createBooking(req, res, next) {
     try {
-      const booking = await BookingsService.createBooking(req.user.id, req.body);
+      const booking = await BookingsService.confirmBookingWithPayment(req.user.id, req.body);
       res.status(201).json({
         success: true,
-        message: 'Seat reservation confirmed',
+        message: 'Seat deposit paid and reservation confirmed!',
         data: booking,
       });
     } catch (error) {
