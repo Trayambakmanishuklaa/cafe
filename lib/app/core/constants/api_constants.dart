@@ -17,8 +17,9 @@ class ApiConstants {
   static const String myOrders = '$baseUrl/orders/my';
 
   // Bookings & Seating
-  static const String tables = '$baseUrl/bookings/tables';
-  static const String checkAvailability = '$baseUrl/bookings/availability';
+  static const String tables = '$baseUrl/seats';
+  static const String staffSeats = '$baseUrl/seats/staff';
+  static const String checkAvailability = '$baseUrl/seats/availability';
   static const String createHold = '$baseUrl/bookings/hold';
   static const String bookings = '$baseUrl/bookings';
   static const String myBookings = '$baseUrl/bookings/my';
