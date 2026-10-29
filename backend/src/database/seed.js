@@ -57,23 +57,9 @@ async function main() {
   await prisma.product.deleteMany({});
   console.log('✅ Sample Products Cleaned: Only Staff-Added Products will be displayed');
 
-  // 5. Seed Seating Tables
-  for (let i = 1; i <= 10; i++) {
-    const tableNumber = i;
-    const capacity = i <= 4 ? 2 : i <= 8 ? 4 : 8;
-    const zone = i <= 5 ? 'WINDOW_SIDE' : 'LOUNGE_AREA';
-    await prisma.cafeTable.upsert({
-      where: { tableNumber },
-      update: { capacity, zone },
-      create: {
-        tableNumber,
-        capacity,
-        zone,
-        qrCode: `TABLE_${tableNumber}_QR_CODE`,
-      },
-    });
-  }
-  console.log('✅ 10 Cafe Seating Tables Seeded');
+  // 5. Clean Seating Tables: Only staff-added tables will exist
+  await prisma.cafeTable.deleteMany({});
+  console.log('✅ Seating Tables Cleaned: 0 tables initially. Staff can add tables starting from #1.');
 
   // 6. Seed Loyalty Rewards & Badges
   const rewardsData = [
