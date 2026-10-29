@@ -43,8 +43,8 @@ class _LoginViewState extends State<LoginView> {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.black.withOpacity(0.5),
-                        AppColors.primary.withOpacity(0.85),
+                        Colors.black.withAlpha(128),
+                        AppColors.primary.withAlpha(215),
                       ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
@@ -53,61 +53,64 @@ class _LoginViewState extends State<LoginView> {
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
                   child: Column(
                     children: [
-                    // Skip Button
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: TextButton(
-                        onPressed: () => Get.offAllNamed(AppRoutes.NAVIGATION),
-                        child: const Text('Skip', style: TextStyle(color: Colors.white, fontSize: 16)),
+                      // Skip Button
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: TextButton(
+                          onPressed: () => Get.offAllNamed(AppRoutes.NAVIGATION),
+                          child: const Text('Skip', style: TextStyle(color: Colors.white, fontSize: 16)),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
+                      const SizedBox(height: 8),
 
-                    // Circular Cafe Logo Badge
-                    Container(
-                      height: 120,
-                      width: 120,
-                      decoration: BoxDecoration(
-                        color: AppColors.background,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.secondary, width: 3),
-                        boxShadow: [
-                          BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 5)),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.coffee, size: 36, color: AppColors.primary),
-                          const SizedBox(height: 2),
-                          const Text(
-                            "Shubh's",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
-                              fontFamily: 'serif',
+                      // Circular Cafe Logo Badge
+                      Container(
+                        height: 110,
+                        width: 110,
+                        decoration: BoxDecoration(
+                          color: AppColors.background,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: AppColors.secondary, width: 3),
+                          boxShadow: [
+                            BoxShadow(color: Colors.black.withAlpha(50), blurRadius: 10, offset: const Offset(0, 5)),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.coffee, size: 32, color: AppColors.primary),
+                            const SizedBox(height: 2),
+                            const Text(
+                              "Shubh's",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                                fontFamily: 'serif',
+                              ),
                             ),
-                          ),
-                          const Text(
-                            "– CAFE –",
-                            style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.secondary,
-                              letterSpacing: 2.0,
+                            const Text(
+                              "– CAFE –",
+                              style: TextStyle(
+                                fontSize: 8,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.secondary,
+                                letterSpacing: 2.0,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'Good Food • Good Mood',
-                      style: TextStyle(
-                        color: AppColors.secondaryLight,
-                        fontSize: 13,
-                    ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Good Food • Good Mood',
+                        style: TextStyle(
+                          color: AppColors.secondaryLight,
+                          fontSize: 12,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -260,13 +263,13 @@ class _LoginViewState extends State<LoginView> {
 
                   // OR Divider
                   Row(
-                    children: const [
-                      Expanded(child: Divider(color: AppColors.divider)),
-                      Padding(
+                    children: [
+                      const Expanded(child: Divider(color: AppColors.divider)),
+                      const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16),
                         child: Text('OR', style: TextStyle(color: AppColors.textLight, fontSize: 12)),
                       ),
-                      Expanded(child: Divider(color: AppColors.divider)),
+                      const Expanded(child: Divider(color: AppColors.divider)),
                     ],
                   ),
                   const SizedBox(height: 20),
