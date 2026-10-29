@@ -186,14 +186,15 @@ class PassportView extends StatelessWidget {
               const SizedBox(height: 8),
               if (p?.transactions.isEmpty ?? true)
                 const Text('No transactions yet.')
-              else
-                ListView.separated(
+              else () {
+                final passport = p!;
+                return ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: p?.transactions.length ?? 0,
+                  itemCount: passport.transactions.length,
                   separatorBuilder: (_, __) => const Divider(height: 1),
                   itemBuilder: (context, index) {
-                    final tx = p.transactions[index];
+                    final tx = passport.transactions[index];
                     final isEarn = tx.points > 0;
                     return ListTile(
                       dense: true,
@@ -208,7 +209,8 @@ class PassportView extends StatelessWidget {
                       ),
                     );
                   },
-                ),
+                );
+              }(),
             ],
           ),
         );
