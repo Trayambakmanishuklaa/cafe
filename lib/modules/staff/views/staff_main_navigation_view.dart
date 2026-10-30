@@ -108,6 +108,7 @@ class _StaffOverviewTabState extends State<StaffOverviewTab> {
     try {
       final res = await _apiClient.get('/orders/staff/queue');
       final List<dynamic> list = res.data['data'] ?? [];
+      if (!mounted) return;
       setState(() {
         _pendingCount = list.where((o) => o['status'] == 'PENDING').length;
         _preparingCount = list.where((o) => o['status'] == 'PREPARING').length;
@@ -117,6 +118,7 @@ class _StaffOverviewTabState extends State<StaffOverviewTab> {
   }
 
   Future<void> _fetchMonthlyExpenses() async {
+    if (!mounted) return;
     setState(() => _isLoadingExpenses = true);
     try {
       final res = await _apiClient.get('/expenses/monthly', queryParameters: {
@@ -124,32 +126,43 @@ class _StaffOverviewTabState extends State<StaffOverviewTab> {
         'year': _selectedMonth.year,
       });
       final data = res.data['data'] ?? {};
+      if (!mounted) return;
       setState(() {
         _totalMonthlyExpense = (data['totalExpense'] as num?)?.toDouble() ?? 0.0;
         _dailyExpenses = data['dailyExpenses'] ?? [];
       });
     } catch (e) {
-      Get.snackbar('Expense Error', ErrorUtils.getCleanMessage(e));
+      if (mounted) {
+        Get.snackbar('Expense Error', ErrorUtils.getCleanMessage(e));
+      }
     } finally {
-      setState(() => _isLoadingExpenses = false);
+      if (mounted) {
+        setState(() => _isLoadingExpenses = false);
+      }
     }
   }
 
   Future<void> _fetchDateExpenses() async {
+    if (!mounted) return;
     setState(() => _isLoadingDateExpenses = true);
     try {
       final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDateDetails);
       final res = await _apiClient.get('/expenses/by-date', queryParameters: {'date': dateStr});
       final data = res.data['data'] ?? {};
+      if (!mounted) return;
       setState(() {
         _dailyTotalExpense = (data['dailyTotal'] as num?)?.toDouble() ?? 0.0;
         _categoryTotals = Map<String, dynamic>.from(data['categoryTotals'] ?? {});
         _dateExpensesList = data['expenses'] ?? [];
       });
     } catch (e) {
-      Get.snackbar('Date Expense Error', ErrorUtils.getCleanMessage(e));
+      if (mounted) {
+        Get.snackbar('Date Expense Error', ErrorUtils.getCleanMessage(e));
+      }
     } finally {
-      setState(() => _isLoadingDateExpenses = false);
+      if (mounted) {
+        setState(() => _isLoadingDateExpenses = false);
+      }
     }
   }
 
@@ -188,10 +201,14 @@ class _StaffOverviewTabState extends State<StaffOverviewTab> {
     try {
       await _apiClient.post('/bookings/check-in/$code');
       _qrCodeController.clear();
-      Get.snackbar('Check-In Verified!', 'Guest successfully checked in to their table!',
-          backgroundColor: Colors.green.withAlpha(25), colorText: Colors.green);
+      if (mounted) {
+        Get.snackbar('Check-In Verified!', 'Guest successfully checked in to their table!',
+            backgroundColor: Colors.green.withAlpha(25), colorText: Colors.green);
+      }
     } catch (e) {
-      Get.snackbar('Check-In Failed', 'Booking pass not found or already checked in');
+      if (mounted) {
+        Get.snackbar('Check-In Failed', 'Booking pass not found or already checked in');
+      }
     }
   }
 
