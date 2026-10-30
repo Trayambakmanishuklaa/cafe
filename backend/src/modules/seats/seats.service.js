@@ -78,11 +78,10 @@ class SeatsService {
     const parsedDate = new Date(date);
     const guests = guestCount ? parseInt(guestCount, 10) : 1;
 
-    // Fetch active seats matching capacity
+    // Fetch all active seats
     const seats = await prisma.cafeTable.findMany({
       where: {
         isActive: true,
-        capacity: { gte: guests },
       },
       orderBy: { tableNumber: 'asc' },
     });

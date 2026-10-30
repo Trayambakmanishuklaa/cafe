@@ -365,10 +365,11 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       const Expanded(child: Divider(color: AppColors.divider)),
                     ],
+
                   ),
                   const SizedBox(height: 20),
 
-                  // Continue with Google Button
+                   // Continue with Google Button
                   OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size.fromHeight(52),

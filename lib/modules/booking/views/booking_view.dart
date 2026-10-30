@@ -41,145 +41,158 @@ class BookingView extends StatelessWidget {
   }
 
   Widget _buildNewReservationTab(BuildContext context, BookingController controller) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Date & Time Controls
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Select Date & Time', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          icon: const Icon(Icons.calendar_today, color: AppColors.primary, size: 18),
-                          label: Obx(() => Text(DateFormat('EEE, dd MMM yyyy').format(controller.selectedDate.value))),
-                          onPressed: () async {
-                            final picked = await showDatePicker(
-                              context: context,
-                              initialDate: controller.selectedDate.value,
-                              firstDate: DateTime.now(),
-                              lastDate: DateTime.now().add(const Duration(days: 14)),
-                            );
-                            if (picked != null) {
-                              controller.selectedDate.value = picked;
-                              controller.fetchAvailability();
-                            }
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Obx(
-                        () => DropdownButton<int>(
-                          value: controller.guestCount.value,
-                          items: [1, 2, 4, 6, 8]
-                              .map((g) => DropdownMenuItem(value: g, child: Text('$g Guests')))
-                              .toList(),
-                          onChanged: (val) {
-                            if (val != null) {
-                              controller.guestCount.value = val;
-                              controller.fetchAvailability();
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Time Slots horizontal list
-                  const Text('Time Slot', style: TextStyle(fontSize: 12, color: AppColors.textLight)),
-                  const SizedBox(height: 6),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Obx(
-                      () => Row(
-                        children: controller.availableTimeSlots.map((slot) {
-                          final isSelected = controller.selectedTimeSlot.value == slot;
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: ChoiceChip(
-                              label: Text(slot),
-                              selected: isSelected,
-                              selectedColor: AppColors.primary,
-                              labelStyle: TextStyle(color: isSelected ? Colors.white : AppColors.textPrimary),
-                              onSelected: (_) {
-                                controller.selectedTimeSlot.value = slot;
+    return RefreshIndicator(
+      onRefresh: () async => await controller.fetchAvailability(),
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Date & Time Controls
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Select Date & Time', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            icon: const Icon(Icons.calendar_today, color: AppColors.primary, size: 18),
+                            label: Obx(() => Text(DateFormat('EEE, dd MMM yyyy').format(controller.selectedDate.value))),
+                            onPressed: () async {
+                              final picked = await showDatePicker(
+                                context: context,
+                                initialDate: controller.selectedDate.value,
+                                firstDate: DateTime.now(),
+                                lastDate: DateTime.now().add(const Duration(days: 14)),
+                              );
+                              if (picked != null) {
+                                controller.selectedDate.value = picked;
                                 controller.fetchAvailability();
-                              },
-                            ),
-                          );
-                        }).toList(),
+                              }
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Obx(
+                          () => DropdownButton<int>(
+                            value: controller.guestCount.value,
+                            items: [1, 2, 4, 6, 8]
+                                .map((g) => DropdownMenuItem(value: g, child: Text('$g Guests')))
+                                .toList(),
+                            onChanged: (val) {
+                              if (val != null) {
+                                controller.guestCount.value = val;
+                                controller.fetchAvailability();
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Time Slots horizontal list
+                    const Text('Time Slot', style: TextStyle(fontSize: 12, color: AppColors.textLight)),
+                    const SizedBox(height: 6),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Obx(
+                        () => Row(
+                          children: controller.availableTimeSlots.map((slot) {
+                            final isSelected = controller.selectedTimeSlot.value == slot;
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: ChoiceChip(
+                                label: Text(slot),
+                                selected: isSelected,
+                                selectedColor: AppColors.primary,
+                                labelStyle: TextStyle(color: isSelected ? Colors.white : AppColors.textPrimary),
+                                onSelected: (_) {
+                                  controller.selectedTimeSlot.value = slot;
+                                  controller.fetchAvailability();
+                                },
+                              ),
+                            );
+                          }).toList(),
+                        ),
                       ),
                     ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Seating Map Legend
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildLegendItem('Available', Colors.green),
+                _buildLegendItem('Selected', AppColors.primary),
+                _buildLegendItem('Reserved', Colors.grey),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Interactive Seat Layout Grid
+            const Text('Interactive Cafe Floor Map', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const SizedBox(height: 8),
+            Obx(() {
+              if (controller.isLoading.value) {
+                return const SizedBox(
+                  height: 200,
+                  child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                );
+              }
+
+              if (controller.tables.isEmpty) {
+                return const SizedBox(
+                  height: 200,
+                  child: Center(
+                    child: Text('No tables added yet. Staff can add tables in the Staff Dashboard!'),
                   ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
+                );
+              }
 
-          // Seating Map Legend
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildLegendItem('Available', Colors.green),
-              _buildLegendItem('Selected', AppColors.primary),
-              _buildLegendItem('Reserved', Colors.grey),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // Interactive Seat Layout Grid
-          const Text('Interactive Cafe Floor Map', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          const SizedBox(height: 8),
-          Obx(() {
-            if (controller.isLoading.value) {
-              return const SizedBox(
-                height: 200,
-                child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  childAspectRatio: 1.1,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                ),
+                itemCount: controller.tables.length,
+                itemBuilder: (context, index) {
+                  final table = controller.tables[index];
+                  return _buildTableCard(table, controller);
+                },
               );
-            }
+            }),
+            const SizedBox(height: 24),
 
-            return GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                childAspectRatio: 1.1,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
+            // Confirm Reservation Button
+            Obx(
+              () => ElevatedButton(
+                onPressed: controller.selectedTable.value == null || controller.isConfirming.value
+                    ? null
+                    : () => _showPaymentSheet(context, controller),
+                child: controller.isConfirming.value
+                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    : Text(controller.selectedTable.value != null
+                        ? 'PAY ₹50 DEPOSIT & RESERVE TABLE #${controller.selectedTable.value!.tableNumber}'
+                        : 'TAP A TABLE TO RESERVE'),
               ),
-              itemCount: controller.tables.length,
-              itemBuilder: (context, index) {
-                final table = controller.tables[index];
-                return _buildTableCard(table, controller);
-              },
-            );
-          }),
-          const SizedBox(height: 24),
-
-          // Confirm Reservation Button
-          Obx(
-            () => ElevatedButton(
-              onPressed: controller.selectedTable.value == null || controller.isConfirming.value
-                  ? null
-                  : () => _showPaymentSheet(context, controller),
-              child: controller.isConfirming.value
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                  : Text(controller.selectedTable.value != null
-                      ? 'PAY ₹50 DEPOSIT & RESERVE TABLE #${controller.selectedTable.value!.tableNumber}'
-                      : 'TAP A TABLE TO RESERVE'),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -317,31 +330,41 @@ class BookingView extends StatelessWidget {
   }
 
   Widget _buildMyBookingsTab(BookingController controller) {
-    return Obx(() {
-      if (controller.myBookings.isEmpty) {
-        return const Center(child: Text('No active seat reservations found.'));
-      }
-
-      return ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: controller.myBookings.length,
-        itemBuilder: (context, index) {
-          final booking = controller.myBookings[index];
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            child: ListTile(
-              leading: const Icon(Icons.qr_code_2, size: 40, color: AppColors.primary),
-              title: Text('Booking #${booking.bookingCode}', style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text(
-                'Table #${booking.table?.tableNumber ?? "N/A"} • ${DateFormat('dd MMM').format(booking.bookingDate)} at ${booking.startTime}\nStatus: ${booking.status}',
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => _showQRPassModal(booking),
-            ),
+    return RefreshIndicator(
+      onRefresh: () async => await controller.fetchMyBookings(),
+      child: Obx(() {
+        if (controller.myBookings.isEmpty) {
+          return ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: const [
+              SizedBox(height: 150),
+              Center(child: Text('No active seat reservations found.')),
+            ],
           );
-        },
-      );
-    });
+        }
+
+        return ListView.builder(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(16),
+          itemCount: controller.myBookings.length,
+          itemBuilder: (context, index) {
+            final booking = controller.myBookings[index];
+            return Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              child: ListTile(
+                leading: const Icon(Icons.qr_code_2, size: 40, color: AppColors.primary),
+                title: Text('Booking #${booking.bookingCode}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text(
+                  'Table #${booking.table?.tableNumber ?? "N/A"} • ${DateFormat('dd MMM').format(booking.bookingDate)} at ${booking.startTime}\nStatus: ${booking.status}',
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _showQRPassModal(booking),
+              ),
+            );
+          },
+        );
+      }),
+    );
   }
 
   void _showQRPassModal(BookingModel booking) {
