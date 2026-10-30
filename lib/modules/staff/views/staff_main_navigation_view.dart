@@ -201,7 +201,7 @@ class _StaffOverviewTabState extends State<StaffOverviewTab> {
 
     // Group date expenses by category
     final Map<String, List<dynamic>> groupedExpenses = {};
-    for (const exp in _dateExpensesList) {
+    for (final exp in _dateExpensesList) {
       final cat = exp['category']?.toString() ?? 'Other Expenses';
       if (!groupedExpenses.containsKey(cat)) {
         groupedExpenses[cat] = [];
@@ -453,8 +453,8 @@ class _StaffOverviewTabState extends State<StaffOverviewTab> {
                           children: groupedExpenses.entries.map((entry) {
                             final categoryName = entry.key;
                             final itemsList = entry.value;
-                            final catTotal = (_categoryTotals[categoryName] as num?)?.toDouble() ??
-                                itemsList.fold(0.0, (sum, x) => sum + ((x['amount'] as num?)?.toDouble() ?? 0.0));
+                            final double catTotal = (_categoryTotals[categoryName] as num?)?.toDouble() ??
+                                itemsList.fold<double>(0.0, (double sum, dynamic x) => sum + ((x['amount'] as num?)?.toDouble() ?? 0.0));
 
                             return Container(
                               margin: const EdgeInsets.only(bottom: 16),
