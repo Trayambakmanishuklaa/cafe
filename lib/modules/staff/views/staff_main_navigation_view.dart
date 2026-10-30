@@ -6,10 +6,7 @@ import '../../../app/core/errors/error_utils.dart';
 import '../../../app/core/network/api_client.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../auth/controllers/auth_controller.dart';
-import 'staff_day_closing_view.dart';
-import 'staff_inventory_view.dart';
 import 'staff_order_queue_view.dart';
-import 'staff_pos_view.dart';
 import 'staff_product_management_view.dart';
 import 'staff_seat_management_view.dart';
 
@@ -25,12 +22,9 @@ class _StaffMainNavigationViewState extends State<StaffMainNavigationView> {
 
   final List<Widget> _staffPages = [
     const StaffOverviewTab(),
-    const StaffPosView(),
     const StaffOrderQueueView(),
-    const StaffInventoryView(),
     const StaffSeatManagementView(),
     const StaffProductManagementView(),
-    const StaffDayClosingView(),
   ];
 
   @override
@@ -46,8 +40,7 @@ class _StaffMainNavigationViewState extends State<StaffMainNavigationView> {
         type: BottomNavigationBarType.fixed,
         selectedItemColor: AppColors.primary,
         unselectedItemColor: AppColors.textLight,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
-        unselectedLabelStyle: const TextStyle(fontSize: 10),
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard_outlined),
@@ -55,34 +48,19 @@ class _StaffMainNavigationViewState extends State<StaffMainNavigationView> {
             label: 'Overview',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.point_of_sale_outlined),
-            activeIcon: Icon(Icons.point_of_sale),
-            label: 'POS',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.kitchen_outlined),
             activeIcon: Icon(Icons.kitchen),
             label: 'Kitchen',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.inventory_outlined),
-            activeIcon: Icon(Icons.inventory),
-            label: 'Inventory',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.table_restaurant_outlined),
             activeIcon: Icon(Icons.table_restaurant),
-            label: 'Seats',
+            label: 'Seats Mgmt',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.inventory_2_outlined),
             activeIcon: Icon(Icons.inventory_2),
             label: 'Products',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.lock_clock_outlined),
-            activeIcon: Icon(Icons.lock_clock),
-            label: 'Closing',
           ),
         ],
       ),
@@ -259,7 +237,7 @@ class _StaffOverviewTabState extends State<StaffOverviewTab> {
                       if (_isLoadingExpenses)
                         const SizedBox(height: 140, child: Center(child: CircularProgressIndicator(color: AppColors.primary)))
                       else if (_dailyExpenses.every((d) => (d['total'] as num? ?? 0) == 0))
-                        const Container(
+                        const SizedBox(
                           height: 120,
                           width: double.infinity,
                           child: Column(
