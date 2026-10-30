@@ -89,11 +89,19 @@ class _StaffOverviewTabState extends State<StaffOverviewTab> {
   List<dynamic> _dailyExpenses = [];
   bool _isLoadingExpenses = false;
 
+  // Date-wise Expense Details state
+  DateTime _selectedDateDetails = DateTime.now();
+  double _dailyTotalExpense = 0.0;
+  Map<String, dynamic> _categoryTotals = {};
+  List<dynamic> _dateExpensesList = [];
+  bool _isLoadingDateExpenses = false;
+
   @override
   void initState() {
     super.initState();
     _fetchStaffKpis();
     _fetchMonthlyExpenses();
+    _fetchDateExpenses();
   }
 
   Future<void> _fetchStaffKpis() async {
@@ -127,11 +135,47 @@ class _StaffOverviewTabState extends State<StaffOverviewTab> {
     }
   }
 
+  Future<void> _fetchDateExpenses() async {
+    setState(() => _isLoadingDateExpenses = true);
+    try {
+      final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDateDetails);
+      final res = await _apiClient.get('/expenses/by-date', queryParameters: {'date': dateStr});
+      final data = res.data['data'] ?? {};
+      setState(() {
+        _dailyTotalExpense = (data['dailyTotal'] as num?)?.toDouble() ?? 0.0;
+        _categoryTotals = Map<String, dynamic>.from(data['categoryTotals'] ?? {});
+        _dateExpensesList = data['expenses'] ?? [];
+      });
+    } catch (e) {
+      Get.snackbar('Date Expense Error', ErrorUtils.getCleanMessage(e));
+    } finally {
+      setState(() => _isLoadingDateExpenses = false);
+    }
+  }
+
   void _changeMonth(int increment) {
     setState(() {
       _selectedMonth = DateTime(_selectedMonth.year, _selectedMonth.month + increment, 1);
+      final now = DateTime.now();
+      if (_selectedMonth.month == now.month && _selectedMonth.year == now.year) {
+        _selectedDateDetails = now;
+      } else {
+        _selectedDateDetails = DateTime(_selectedMonth.year, _selectedMonth.month, 1);
+      }
     });
     _fetchMonthlyExpenses();
+    _fetchDateExpenses();
+  }
+
+  void _changeDate(int days) {
+    setState(() {
+      _selectedDateDetails = _selectedDateDetails.add(Duration(days: days));
+      if (_selectedDateDetails.month != _selectedMonth.month || _selectedDateDetails.year != _selectedMonth.year) {
+        _selectedMonth = DateTime(_selectedDateDetails.year, _selectedDateDetails.month, 1);
+        _fetchMonthlyExpenses();
+      }
+    });
+    _fetchDateExpenses();
   }
 
   Future<void> _verifyCheckInPass() async {
@@ -155,6 +199,16 @@ class _StaffOverviewTabState extends State<StaffOverviewTab> {
   Widget build(BuildContext context) {
     final authController = Get.find<AuthController>();
 
+    // Group date expenses by category
+    final Map<String, List<dynamic>> groupedExpenses = {};
+    for (const exp in _dateExpensesList) {
+      final cat = exp['category']?.toString() ?? 'Other Expenses';
+      if (!groupedExpenses.containsKey(cat)) {
+        groupedExpenses[cat] = [];
+      }
+      groupedExpenses[cat]!.add(exp);
+    }
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -170,6 +224,7 @@ class _StaffOverviewTabState extends State<StaffOverviewTab> {
         onRefresh: () async {
           await _fetchStaffKpis();
           await _fetchMonthlyExpenses();
+          await _fetchDateExpenses();
         },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -306,6 +361,198 @@ class _StaffOverviewTabState extends State<StaffOverviewTab> {
                             Text(
                               '₹${_totalMonthlyExpense.toStringAsFixed(2)}',
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.primary),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Date-wise Expense Details Section
+              Card(
+                elevation: 3,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Date-wise Expense Details', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.primary)),
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.chevron_left, size: 22),
+                                onPressed: () => _changeDate(-1),
+                              ),
+                              InkWell(
+                                onTap: () async {
+                                  final picked = await showDatePicker(
+                                    context: context,
+                                    initialDate: _selectedDateDetails,
+                                    firstDate: DateTime(2020),
+                                    lastDate: DateTime.now().add(const Duration(days: 30)),
+                                  );
+                                  if (picked != null) {
+                                    setState(() {
+                                      _selectedDateDetails = picked;
+                                      if (_selectedDateDetails.month != _selectedMonth.month ||
+                                          _selectedDateDetails.year != _selectedMonth.year) {
+                                        _selectedMonth = DateTime(_selectedDateDetails.year, _selectedDateDetails.month, 1);
+                                        _fetchMonthlyExpenses();
+                                      }
+                                    });
+                                    _fetchDateExpenses();
+                                  }
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.secondaryLight,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    DateFormat('dd MMM yyyy').format(_selectedDateDetails),
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: AppColors.primaryDark),
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.chevron_right, size: 22),
+                                onPressed: () => _changeDate(1),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const Divider(height: 16),
+
+                      if (_isLoadingDateExpenses)
+                        const SizedBox(height: 100, child: Center(child: CircularProgressIndicator(color: AppColors.primary)))
+                      else if (_dateExpensesList.isEmpty)
+                        const SizedBox(
+                          height: 100,
+                          width: double.infinity,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.receipt_long_outlined, size: 36, color: AppColors.textLight),
+                              SizedBox(height: 6),
+                              Text('No expenses recorded for this date.', style: TextStyle(fontSize: 12, color: AppColors.textLight)),
+                            ],
+                          ),
+                        )
+                      else
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: groupedExpenses.entries.map((entry) {
+                            final categoryName = entry.key;
+                            final itemsList = entry.value;
+                            final catTotal = (_categoryTotals[categoryName] as num?)?.toDouble() ??
+                                itemsList.fold(0.0, (sum, x) => sum + ((x['amount'] as num?)?.toDouble() ?? 0.0));
+
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 16),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF9F7F2),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: const Color(0xFFE8E3D8)),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Category Header
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(categoryName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.primary)),
+                                      Text('₹${catTotal.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.primary)),
+                                    ],
+                                  ),
+                                  const Divider(height: 12),
+
+                                  // Expense Item Records
+                                  ...itemsList.map((exp) {
+                                    final amt = (exp['amount'] as num?)?.toDouble() ?? 0.0;
+                                    final itemDetails = exp['itemDetails'] ?? 'Expense Item';
+                                    final payMethod = exp['paymentMethod'] ?? 'Cash';
+                                    final note = exp['note']?.toString().isNotEmpty == true ? exp['note'] : 'No note added';
+                                    final staffName = exp['user']?['name'] ?? exp['createdBy']?['name'] ?? 'Staff Member';
+
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 6.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Expanded(
+                                                child: Text(itemDetails, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                                              ),
+                                              Text('₹${amt.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.red)),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.primary.withAlpha(20),
+                                                  borderRadius: BorderRadius.circular(4),
+                                                ),
+                                                child: Text(payMethod, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Expanded(
+                                                child: Text('Added By: $staffName', style: const TextStyle(fontSize: 11, color: AppColors.textLight), overflow: TextOverflow.ellipsis),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Text('Note: $note', style: const TextStyle(fontSize: 11, fontStyle: FontStyle.italic, color: AppColors.textSecondary)),
+                                        ],
+                                      ),
+                                    );
+                                  }),
+                                  const SizedBox(height: 4),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Text('$categoryName Total: ₹${catTotal.toStringAsFixed(0)}',
+                                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.primaryDark)),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      const SizedBox(height: 12),
+
+                      // Overall Daily Total Banner
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.green.withAlpha(20),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.green.withAlpha(50)),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Total Expenses on ${DateFormat('dd MMM yyyy').format(_selectedDateDetails)}:',
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                            ),
+                            Text(
+                              '₹${_dailyTotalExpense.toStringAsFixed(2)}',
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.green),
                             ),
                           ],
                         ),

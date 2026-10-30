@@ -1,36 +1,30 @@
-# Staff Panel Daily Expense Tracker with Monthly Graph — Implementation Plan
+# Date-wise Daily Expense Details in Staff Overview Page — Implementation Plan
 
-Add a Daily Expense Tracking system to the existing Cafe Management App, allowing staff to record expenses in 8 categories on the Kitchen Page, with a live daily expense graph and total monthly summary on the Staff Overview Page.
+Extend the Staff Overview Page with a **Date-wise Expense Details** section, allowing staff to select any date, view expense records grouped by category with full details (Item, Amount, Payment Method, Note, Staff Creator Name), and see category totals and overall daily total.
 
 ## User Review Required
 
 > [!NOTE]
-> All existing screens, including Customer Panel (Home, Menu, Book Seat, Passport) and Staff Panel (Overview, Kitchen Queue, Seats Mgmt, Products), remain completely intact and functional.
+> All existing features remain 100% untouched: Kitchen Page expense submission, 8 expense categories, Monthly Expense Graph, Monthly Total Calculation, and Customer/Staff screens.
 
 ## Proposed Changes
 
 ### Backend & Database (Node.js + Express + Prisma + MongoDB)
-1. **Prisma Schema (`schema.prisma`)**:
-   - Add `Expense` model with fields: `id`, `category`, `itemDetails`, `amount`, `expenseDate`, `paymentMethod`, `note`, `createdBy`, `createdAt`, `updatedAt`.
-   - Relation with `User` (`createdBy` -> `User`).
-2. **Expense Service & Endpoints (`backend/src/modules/expenses/`)**:
-   - `POST /api/v1/expenses` — Create expense.
-   - `GET /api/v1/expenses/monthly` — Returns `month`, `year`, `totalExpense`, and `dailyExpenses` array (`[{ day: 1, total: 500 }, ...]`).
-   - `GET /api/v1/expenses` — Fetch expense history.
-3. **Register Route in `backend/src/app.js`**:
-   - Mount `/api/v1/expenses`.
+1. **Expense Service & API (`backend/src/modules/expenses/`)**:
+   - Add `GET /api/v1/expenses/by-date?date=YYYY-MM-DD`.
+   - Fetches all expense records for the specified calendar day across all authorized staff members.
+   - Populates staff creator name (`user: { name }`).
+   - Calculates `dailyTotal` and `categoryTotals` map (`{ "Raw Materials": 500, "Ingredients": 300 }`).
 
 ### Frontend (Flutter + GetX)
-1. **Kitchen Page (`StaffOrderQueueView`)**:
-   - Add "Daily Expenses" section below the order queue.
-   - 8 Category Cards: Raw Materials, Ingredients, Staff & Labour, Utilities, Rent & Maintenance, Equipment, Marketing, Other.
-   - Add Expense Form modal with category pre-selection, item details, amount in ₹, date picker, payment method dropdown, and note.
-2. **Staff Overview Page (`StaffOverviewTab`)**:
-   - Add "Monthly Expense Overview" section.
-   - Month/Year selector with `<` and `>` controls.
-   - Interactive Bar Graph showing daily expenses for the selected month.
-   - "Total Expenses This Month: ₹X" banner.
-   - Empty state when no expenses exist for the selected month ("No expenses recorded for this month", ₹0 total).
+1. **Staff Overview Page (`StaffOverviewTab` in `staff_main_navigation_view.dart`)**:
+   - Add **"Date-wise Expense Details"** section below the Monthly Expense Overview card.
+   - **Date Selector**: Controls for Previous Date `<` and Next Date `>`, and date picker.
+   - **Expense Record Cards**: Grouped by category, displaying Item Details, Amount in ₹, Payment Method, Note, and Staff Creator Name.
+   - **Category Totals**: Total amount for each displayed category.
+   - **Daily Total Banner**: `Total Expenses on [Date]: ₹X,XXX`.
+   - **Empty State**: Displays *"No expenses recorded for this date."* and ₹0 total when no records exist.
+   - **Sync with Month Selector**: Changing month updates the date selector to today's date (if in month) or 1st of selected month and refreshes date-wise details.
 
 ## Verification Plan
 
@@ -39,7 +33,7 @@ Add a Daily Expense Tracking system to the existing Cafe Management App, allowin
 - Run Flutter static analyzer (`analyze_file`).
 
 ### Manual Verification
-- Test adding expenses under different categories in the Kitchen Page.
-- Verify expense is saved in MongoDB.
-- Switch to Staff Overview Page and verify the daily graph and monthly total update instantly.
-- Test changing months to view historical data and empty month state.
+- Add expenses from Kitchen Page under multiple categories.
+- Verify today's date on Overview Page displays records grouped by category with staff creator name and totals.
+- Select previous dates to verify historical daily records.
+- Change months in the monthly graph and verify date-wise details sync cleanly.

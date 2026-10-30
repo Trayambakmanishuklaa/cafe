@@ -1,7 +1,6 @@
 # Task Checklist
 
-- `[x]` Phase 1: Backend Expense Model & Database Schema Migration
-- `[x]` Phase 2: Backend Expense Service, Controller, & Routes (`/api/v1/expenses`)
-- `[x]` Phase 3: Kitchen Page Daily Expense Category Cards & Add Expense Form (`StaffOrderQueueView`)
-- `[x]` Phase 4: Staff Overview Page Monthly Expense Graph & Total Calculator (`StaffOverviewTab`)
-- `[x]` Phase 5: Verification & End-to-End Integration Testing
+- `[x]` Phase 1: Backend `GET /api/v1/expenses/by-date` API & Category Aggregation
+- `[x]` Phase 2: Staff Overview Page Date Selector & Date-wise Expense Cards (`StaffOverviewTab`)
+- `[x]` Phase 3: Category-wise Grouping, Category Totals, & Daily Total Banner
+- `[x]` Phase 4: Syncing Month Selector with Date Selector & Verification

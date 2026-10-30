@@ -77,6 +77,42 @@ class ExpensesService {
     };
   }
 
+  static async getExpensesByDate(dateStr) {
+    const targetDate = dateStr ? new Date(dateStr) : new Date();
+    targetDate.setHours(0, 0, 0, 0);
+
+    const nextDate = new Date(targetDate);
+    nextDate.setDate(nextDate.getDate() + 1);
+
+    const expenses = await prisma.expense.findMany({
+      where: {
+        expenseDate: {
+          gte: targetDate,
+          lt: nextDate,
+        },
+      },
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+      },
+      orderBy: { expenseDate: 'desc' },
+    });
+
+    let dailyTotal = 0.0;
+    const categoryTotals = {};
+
+    for (const exp of expenses) {
+      dailyTotal += exp.amount;
+      categoryTotals[exp.category] = (categoryTotals[exp.category] || 0.0) + exp.amount;
+    }
+
+    return {
+      date: targetDate.toISOString().split('T')[0],
+      dailyTotal,
+      categoryTotals,
+      expenses,
+    };
+  }
+
   static async getExpenses({ category, startDate, endDate }) {
     const where = {};
     if (category) where.category = category;

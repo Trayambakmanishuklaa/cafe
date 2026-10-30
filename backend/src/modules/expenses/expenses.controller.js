@@ -29,6 +29,18 @@ class ExpensesController {
     }
   }
 
+  static async getExpensesByDate(req, res, next) {
+    try {
+      const data = await ExpensesService.getExpensesByDate(req.query.date);
+      res.status(200).json({
+        success: true,
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async getExpenses(req, res, next) {
     try {
       const expenses = await ExpensesService.getExpenses(req.query);

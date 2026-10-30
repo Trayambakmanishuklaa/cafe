@@ -9,6 +9,7 @@ router.use(authenticate, authorize('STAFF', 'ADMIN'));
 
 router.post('/', ExpensesController.createExpense);
 router.get('/monthly', ExpensesController.getMonthlyExpenses);
+router.get('/by-date', ExpensesController.getExpensesByDate);
 router.get('/', ExpensesController.getExpenses);
 
 module.exports = router;
