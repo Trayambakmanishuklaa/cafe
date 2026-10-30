@@ -265,21 +265,32 @@ class _StaffOverviewTabState extends State<StaffOverviewTab> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Monthly Expense Overview', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.primary)),
+                          const Expanded(
+                            child: Text(
+                              'Monthly Expense Overview',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppColors.primary),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                           Row(
                             children: [
                               IconButton(
-                                icon: const Icon(Icons.chevron_left, size: 22),
+                                icon: const Icon(Icons.chevron_left, size: 20),
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
                                 onPressed: () => _changeMonth(-1),
                               ),
+                              const SizedBox(width: 4),
                               Text(
                                 DateFormat('MMM yyyy').format(_selectedMonth),
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                               ),
+                              const SizedBox(width: 4),
                               IconButton(
-                                icon: const Icon(Icons.chevron_right, size: 22),
+                                icon: const Icon(Icons.chevron_right, size: 20),
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
                                 onPressed: () => _changeMonth(1),
                               ),
                             ],
@@ -381,15 +392,23 @@ class _StaffOverviewTabState extends State<StaffOverviewTab> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Date-wise Expense Details', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.primary)),
+                          const Expanded(
+                            child: Text(
+                              'Date-wise Expense Details',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppColors.primary),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                           Row(
                             children: [
                               IconButton(
-                                icon: const Icon(Icons.chevron_left, size: 22),
+                                icon: const Icon(Icons.chevron_left, size: 20),
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
                                 onPressed: () => _changeDate(-1),
                               ),
+                              const SizedBox(width: 4),
                               InkWell(
                                 onTap: () async {
                                   final picked = await showDatePicker(
@@ -422,8 +441,13 @@ class _StaffOverviewTabState extends State<StaffOverviewTab> {
                                   ),
                                 ),
                               ),
+                              const SizedBox(width: 4),
                               IconButton(
-                                icon: const Icon(Icons.chevron_right, size: 22),
+                                icon: const Icon(Icons.chevron_right, size: 20),
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                onPressed: () => _changeDate(1),
+                              ),
                                 onPressed: () => _changeDate(1),
                               ),
                             ],
