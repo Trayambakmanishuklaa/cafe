@@ -448,8 +448,6 @@ class _StaffOverviewTabState extends State<StaffOverviewTab> {
                                 constraints: const BoxConstraints(),
                                 onPressed: () => _changeDate(1),
                               ),
-                                onPressed: () => _changeDate(1),
-                              ),
                             ],
                           ),
                         ],
