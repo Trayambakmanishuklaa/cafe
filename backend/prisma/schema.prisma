@@ -104,6 +104,7 @@ model User {
   couponRedemptions    CouponRedemption[]
   feedbacks            Feedback[]
   auditLogs            AuditLog[]
+  expenses             Expense[]
 }
 
 model CustomerProfile {
@@ -451,4 +452,22 @@ model AuditLog {
   entityId    String?
   detailsJson String?
   createdAt   DateTime @default(now())
+}
+
+model Expense {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  category      String    // Raw Materials, Ingredients, Staff & Labour, Utilities, Rent & Maintenance, Equipment, Marketing, Other Expenses
+  itemDetails   String
+  amount        Float
+  expenseDate   DateTime  @default(now())
+  paymentMethod String    @default("Cash") // Cash, UPI, Card, Bank Transfer, Other
+  note          String?
+  createdBy     String    @db.ObjectId
+  user          User      @relation(fields: [createdBy], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
+
+  @@index([expenseDate])
+  @@index([category])
+  @@index([createdBy])
 }
