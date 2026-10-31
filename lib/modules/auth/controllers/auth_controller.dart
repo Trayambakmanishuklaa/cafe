@@ -32,18 +32,19 @@ class AuthController extends GetxController {
 
   Future<void> restoreSession() async {
     final token = await _storageService.getToken();
-    final userRaw = _storageService.getUserRaw();
 
-    if (token != null && token.isNotEmpty && userRaw != null) {
+    if (token != null && token.isNotEmpty) {
       try {
-        currentUser.value = UserModel.fromRawJson(userRaw);
-        // Refresh profile in background
-        _authRepository.getProfile().then((updatedUser) {
-          currentUser.value = updatedUser;
-          _storageService.saveUserRaw(updatedUser.toRawJson());
-        }).catchError((_) {});
+        final updatedUser = await _authRepository.getProfile();
+        currentUser.value = updatedUser;
+        await _storageService.saveUserRaw(updatedUser.toRawJson());
       } catch (e) {
-        await _storageService.clearAll();
+        final userRaw = _storageService.getUserRaw();
+        if (userRaw != null) {
+          currentUser.value = UserModel.fromRawJson(userRaw);
+        } else {
+          await _storageService.clearAll();
+        }
       }
     }
   }
