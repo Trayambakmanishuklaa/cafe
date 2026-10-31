@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../app/core/errors/error_utils.dart';
 import '../../../app/core/network/api_client.dart';
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_theme.dart';
 import '../../auth/controllers/auth_controller.dart';
 import 'staff_order_queue_view.dart';
 import 'staff_product_management_view.dart';
@@ -260,7 +261,7 @@ class _StaffOverviewTabState extends State<StaffOverviewTab> {
               GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 3,
+                crossAxisCount: AppResponsive.getGridCrossAxisCount(context, phone: 3, tablet: 3, landscape: 6),
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 childAspectRatio: 1.1,

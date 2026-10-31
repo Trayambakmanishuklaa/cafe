@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_theme.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../loyalty/controllers/passport_controller.dart';
 import '../../menu/controllers/menu_controller.dart';
@@ -34,15 +35,15 @@ class HomeView extends StatelessWidget {
         final progressVal = ((passport?.teaOrdersProgress ?? 0) / 4.0).clamp(0.0, 1.0);
 
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          padding: AppResponsive.getScreenPadding(context),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Customer Greeting Header
               Text(
                 'Hello, ${user?.name ?? "Coffee Lover"}! 👋',
-                style: const TextStyle(
-                  fontSize: 22,
+                style: TextStyle(
+                  fontSize: AppResponsive.getResponsiveFontSize(context, 22),
                   fontWeight: FontWeight.bold,
                   color: AppColors.primary,
                 ),
@@ -67,7 +68,7 @@ class HomeView extends StatelessWidget {
               GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
+                crossAxisCount: AppResponsive.getGridCrossAxisCount(context, phone: 2, tablet: 4, landscape: 4),
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
                 childAspectRatio: 1.25,
@@ -111,8 +112,8 @@ class HomeView extends StatelessWidget {
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(color: AppColors.primary.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 4)),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4)),
                   ],
                 ),
                 child: Column(
@@ -145,72 +146,67 @@ class HomeView extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Next Free Tea Reward Progress:', style: TextStyle(color: AppColors.secondaryLight, fontSize: 12)),
-                        Text(progressText, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                        const Text('Tea Order Progress:', style: TextStyle(color: Colors.white70, fontSize: 13)),
+                        Text(
+                          progressText,
+                          style: const TextStyle(color: AppColors.secondary, fontWeight: FontWeight.bold, fontSize: 13),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(8),
                       child: LinearProgressIndicator(
                         value: progressVal,
+                        minHeight: 8,
                         backgroundColor: Colors.white24,
                         color: AppColors.secondary,
-                        minHeight: 10,
                       ),
                     ),
                     const SizedBox(height: 8),
                     const Text(
                       'Every 4 completed Tea orders earn 1 Free Tea reward for your next order!',
-                      style: TextStyle(color: AppColors.secondaryLight, fontSize: 11, fontStyle: FontStyle.italic),
+                      style: TextStyle(color: Colors.white60, fontSize: 11, fontStyle: FontStyle.italic),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 24),
 
-              // Smart Combo Feature Banner
+              // Recommendations / Special Combos Carousel
               const Text(
-                '💡 Smart Salesperson Combos',
+                'Chef Recommended Combos',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
+                  color: AppColors.textPrimary,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               Card(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(12.0),
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(12),
+                        width: 70,
+                        height: 70,
                         decoration: BoxDecoration(
                           color: AppColors.secondaryLight,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Icon(Icons.restaurant, color: AppColors.primary, size: 36),
+                        child: const Icon(Icons.fastfood, color: AppColors.primary, size: 36),
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: 14),
                       const Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Masala Chai + Bun Maska',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                            ),
+                            Text('Kulhad Chai + Bun Maska', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                             SizedBox(height: 4),
-                            Text(
-                              'Classic Afternoon Combo • Save ₹15!',
-                              style: TextStyle(color: AppColors.textLight, fontSize: 12),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              '₹70 (Was ₹85)',
-                              style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 14),
-                            ),
+                            Text('Classic Afternoon Combo • Save ₹15!', style: TextStyle(color: AppColors.textLight, fontSize: 12)),
+                            SizedBox(height: 6),
+                            Text('₹85', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 16)),
                           ],
                         ),
                       ),
@@ -227,27 +223,37 @@ class HomeView extends StatelessWidget {
 
   Widget _buildCategoryCard(String title, IconData icon, String subtitle, VoidCallback onTap) {
     return Card(
-      elevation: 2,
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(10.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 32, color: AppColors.primary),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.secondaryLight,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: AppColors.primary, size: 24),
+              ),
               const SizedBox(height: 6),
               Text(
                 title,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                textAlign: TextAlign.center,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               Text(
                 subtitle,
+                style: const TextStyle(color: AppColors.textLight, fontSize: 10),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: AppColors.textLight, fontSize: 10),
               ),
             ],
           ),

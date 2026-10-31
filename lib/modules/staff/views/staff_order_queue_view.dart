@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../app/core/errors/error_utils.dart';
 import '../../../app/core/network/api_client.dart';
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_theme.dart';
 import '../../../data/models/order_model.dart';
 import '../../../data/repositories/order_repository.dart';
 
@@ -329,8 +330,8 @@ class _StaffOrderQueueViewState extends State<StaffOrderQueueView> {
               GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: AppResponsive.getGridCrossAxisCount(context, phone: 2, tablet: 4, landscape: 4),
                   childAspectRatio: 2.2,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,

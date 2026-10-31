@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_theme.dart';
 import '../../../data/models/product_model.dart';
 import '../../cart/controllers/cart_controller.dart';
 import '../controllers/menu_controller.dart';
@@ -124,8 +125,8 @@ class MenuView extends StatelessWidget {
 
               return GridView.builder(
                 padding: const EdgeInsets.all(16),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: AppResponsive.getGridCrossAxisCount(context, phone: 2, tablet: 3, landscape: 4),
                   childAspectRatio: 0.72,
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,

@@ -1,39 +1,37 @@
-# Date-wise Daily Expense Details in Staff Overview Page — Implementation Plan
+# Complete Responsive UI, Adaptive Font Scaling & Overflow Prevention — Implementation Plan
 
-Extend the Staff Overview Page with a **Date-wise Expense Details** section, allowing staff to select any date, view expense records grouped by category with full details (Item, Amount, Payment Method, Note, Staff Creator Name), and see category totals and overall daily total.
+Upgrade the entire Flutter application to be 100% responsive and adaptive across all Android screen sizes, display zoom levels, and system accessibility font scaling settings without breaking existing functionality or visual identity.
 
 ## User Review Required
 
 > [!NOTE]
-> All existing features remain 100% untouched: Kitchen Page expense submission, 8 expense categories, Monthly Expense Graph, Monthly Total Calculation, and Customer/Staff screens.
+> All existing business logic, GetX controllers, APIs, authentication, and screens remain 100% intact. This optimization ensures fluid responsiveness, zero overflow stripes, and accessibility font scaling support.
 
 ## Proposed Changes
 
-### Backend & Database (Node.js + Express + Prisma + MongoDB)
-1. **Expense Service & API (`backend/src/modules/expenses/`)**:
-   - Add `GET /api/v1/expenses/by-date?date=YYYY-MM-DD`.
-   - Fetches all expense records for the specified calendar day across all authorized staff members.
-   - Populates staff creator name (`user: { name }`).
-   - Calculates `dailyTotal` and `categoryTotals` map (`{ "Raw Materials": 500, "Ingredients": 300 }`).
+### Centralized Responsive & Typography Utility (`lib/app/theme/app_theme.dart`)
+- **`AppResponsive` Utility**:
+  - Screen size categorization (`isSmallScreen`, `isTablet`, `isLandscape`).
+  - Adaptive padding, margin, and font size helpers using modern `MediaQueryData` and `TextScaler`.
+  - Responsive Theme Data configuring `TextTheme` and `InputDecorationTheme`.
 
-### Frontend (Flutter + GetX)
-1. **Staff Overview Page (`StaffOverviewTab` in `staff_main_navigation_view.dart`)**:
-   - Add **"Date-wise Expense Details"** section below the Monthly Expense Overview card.
-   - **Date Selector**: Controls for Previous Date `<` and Next Date `>`, and date picker.
-   - **Expense Record Cards**: Grouped by category, displaying Item Details, Amount in ₹, Payment Method, Note, and Staff Creator Name.
-   - **Category Totals**: Total amount for each displayed category.
-   - **Daily Total Banner**: `Total Expenses on [Date]: ₹X,XXX`.
-   - **Empty State**: Displays *"No expenses recorded for this date."* and ₹0 total when no records exist.
-   - **Sync with Month Selector**: Changing month updates the date selector to today's date (if in month) or 1st of selected month and refreshes date-wise details.
+### Frontend Screen Responsiveness Audit & Optimization
+1. **Authentication Screens (`login_view.dart`, `register_view.dart`)**:
+   - Wrap in `SingleChildScrollView` with `LayoutBuilder` & `ConstrainedBox(minHeight: constraint.maxHeight)`.
+   - Ensure zero overflow when soft keyboard opens or system font size increases.
+2. **Customer Screens (`home_view.dart`, `menu_view.dart`, `booking_view.dart`, `passport_view.dart`)**:
+   - Use `Expanded`, `Flexible`, and adaptive grid crossAxisCount (2 columns on mobile, 3-4 on tablet/landscape).
+   - Ensure cards, category chips, loyalty progress bars, and seat layout map adapt dynamically without text clipping.
+3. **Staff Screens (`staff_main_navigation_view.dart`, `staff_order_queue_view.dart`, `staff_product_management_view.dart`, `staff_seat_management_view.dart`)**:
+   - Responsive KPI grid, Monthly Expense Graph, Date-wise Expense cards, and seat check-in card.
+   - Adaptive category grid (2 columns on phone, 4 on tablet/landscape).
 
 ## Verification Plan
 
 ### Automated Tests
-- Run backend unit/integration tests (`npm test`).
-- Run Flutter static analyzer (`analyze_file`).
+- Run Flutter static analyzer (`analyze_file`) on all modified UI views.
 
 ### Manual Verification
-- Add expenses from Kitchen Page under multiple categories.
-- Verify today's date on Overview Page displays records grouped by category with staff creator name and totals.
-- Select previous dates to verify historical daily records.
-- Change months in the monthly graph and verify date-wise details sync cleanly.
+- Test screens on small phone screens, standard phones, tablets, and landscape orientation.
+- Verify zero `RenderFlex` overflow errors when soft keyboard appears.
+- Test with increased system font size (accessibility scaling).
