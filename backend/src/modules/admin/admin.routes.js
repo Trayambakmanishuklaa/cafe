@@ -5,11 +5,18 @@ const authorize = require('../../middleware/authorize');
 
 const router = express.Router();
 
-router.use(authenticate);
-router.use(authorize('OWNER'));
+router.use(authenticate, authorize('ADMIN'));
 
-router.get('/overview', AdminController.getOverview);
-router.patch('/products/:id/availability', AdminController.toggleProduct);
-router.post('/products', AdminController.createProduct);
+// Staff Account Management
+router.post('/staff', AdminController.createStaff);
+router.get('/staff', AdminController.getStaffList);
+router.patch('/staff/:id/reset-password', AdminController.resetStaffPassword);
+
+// Daily Sales Reporting for Admin
+router.get('/sales/by-date', AdminController.getAdminSalesByDate);
+router.get('/sales/monthly', AdminController.getAdminMonthlySales);
+
+// Combined Financial Overview
+router.get('/dashboard/overview', AdminController.getCombinedOverview);
 
 module.exports = router;

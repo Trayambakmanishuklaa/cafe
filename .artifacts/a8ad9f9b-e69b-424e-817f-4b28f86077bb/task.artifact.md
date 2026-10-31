@@ -1,7 +1,7 @@
 # Task Checklist
 
-- `[x]` Phase 1: Centralized Responsive & Typography Utility (`lib/app/theme/app_theme.dart`)
-- `[x]` Phase 2: Authentication Screens Responsiveness & Keyboard Overflow Prevention (`login_view.dart`, `register_view.dart`)
-- `[x]` Phase 3: Customer Dashboard & Feature Screens Responsiveness (`home_view.dart`, `menu_view.dart`, `booking_view.dart`, `passport_view.dart`)
-- `[x]` Phase 4: Staff Panel Screens Responsiveness & Adaptive Charts (`staff_main_navigation_view.dart`, `staff_order_queue_view.dart`, `staff_product_management_view.dart`, `staff_seat_management_view.dart`)
-- `[x]` Phase 5: Verification & Flutter Analyzer Testing across All Responsive Screens
+- `[x]` Phase 1: Database Schema & Backend Daily Sales / Staff Management Endpoints
+- `[x]` Phase 2: Staff Panel Daily Sales Entry Form & My Records View
+- `[x]` Phase 3: Flutter Admin Dashboard, Staff Management, & Financial Overview Screens
+- `[x]` Phase 4: Integration of Complete Staff Expenses & Daily Sales in Admin Panel
+- `[x]` Phase 5: Role Routing & End-to-End Testing Across Customer, Staff, and Admin Panels

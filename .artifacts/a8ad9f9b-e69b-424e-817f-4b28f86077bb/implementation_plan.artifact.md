@@ -1,37 +1,49 @@
-# Complete Responsive UI, Adaptive Font Scaling & Overflow Prevention — Implementation Plan
+# Admin Panel, Staff Management, Daily Sales & Staff Overview Integration — Implementation Plan
 
-Upgrade the entire Flutter application to be 100% responsive and adaptive across all Android screen sizes, display zoom levels, and system accessibility font scaling settings without breaking existing functionality or visual identity.
+Build a complete **Admin Panel** inside the existing single Flutter app, featuring Staff Account Management, Daily Sales Entry & Reporting, Expense Overview Integration, and Combined Business Financial Overview (Sales, Expenses, Net Operating Difference).
 
 ## User Review Required
 
-> [!NOTE]
-> All existing business logic, GetX controllers, APIs, authentication, and screens remain 100% intact. This optimization ensures fluid responsiveness, zero overflow stripes, and accessibility font scaling support.
+> [!IMPORTANT]
+> **Role-Based Security & Privacy**: Admin endpoints are strictly protected by `authorize('ADMIN')`. Staff members can record their daily sales and expenses, but cannot access Admin financial reports, staff management, or change other staff members' records.
 
 ## Proposed Changes
 
-### Centralized Responsive & Typography Utility (`lib/app/theme/app_theme.dart`)
-- **`AppResponsive` Utility**:
-  - Screen size categorization (`isSmallScreen`, `isTablet`, `isLandscape`).
-  - Adaptive padding, margin, and font size helpers using modern `MediaQueryData` and `TextScaler`.
-  - Responsive Theme Data configuring `TextTheme` and `InputDecorationTheme`.
+### Backend & Database (Node.js + Express + Prisma + MongoDB)
+1. **Prisma Schema (`schema.prisma`)**:
+   - `DailySales` model: `id`, `staffId` (User relation), `salesDate`, `totalSales`, `note`, `createdAt`, `updatedAt`.
+   - Ensure `User` model supports `ADMIN`, `STAFF`, `CUSTOMER` roles and relations.
+2. **Daily Sales Module (`backend/src/modules/sales/`)**:
+   - `POST /api/v1/sales/daily` — Record/update staff daily sales entry (upsert by `staffId` + `salesDate`).
+   - `GET /api/v1/sales/daily/my-records` — Staff views their own daily sales entries.
+   - `GET /api/v1/admin/sales/by-date` — Admin views all staff sales for a date.
+   - `GET /api/v1/admin/sales/monthly` — Admin views aggregated monthly sales graph and total.
+3. **Staff Management Module (`backend/src/modules/admin/`)**:
+   - `POST /api/v1/admin/staff` — Create staff account (Full Name, Mobile, Email, Password, Active status).
+   - `GET /api/v1/admin/staff` — List and search staff.
+   - `PATCH /api/v1/admin/staff/:id/status` — Activate/Deactivate staff account.
+   - `PATCH /api/v1/admin/staff/:id/reset-password` — Reset password.
+4. **Combined Business Overview (`/api/v1/admin/dashboard/overview`)**:
+   - Aggregates total sales, total expenses, net operating difference (Sales - Expenses), total orders, and active staff.
 
-### Frontend Screen Responsiveness Audit & Optimization
-1. **Authentication Screens (`login_view.dart`, `register_view.dart`)**:
-   - Wrap in `SingleChildScrollView` with `LayoutBuilder` & `ConstrainedBox(minHeight: constraint.maxHeight)`.
-   - Ensure zero overflow when soft keyboard opens or system font size increases.
-2. **Customer Screens (`home_view.dart`, `menu_view.dart`, `booking_view.dart`, `passport_view.dart`)**:
-   - Use `Expanded`, `Flexible`, and adaptive grid crossAxisCount (2 columns on mobile, 3-4 on tablet/landscape).
-   - Ensure cards, category chips, loyalty progress bars, and seat layout map adapt dynamically without text clipping.
-3. **Staff Screens (`staff_main_navigation_view.dart`, `staff_order_queue_view.dart`, `staff_product_management_view.dart`, `staff_seat_management_view.dart`)**:
-   - Responsive KPI grid, Monthly Expense Graph, Date-wise Expense cards, and seat check-in card.
-   - Adaptive category grid (2 columns on phone, 4 on tablet/landscape).
+### Frontend (Flutter + GetX)
+1. **Role-Based Navigation (`MainNavigationView`)**:
+   - Automatically routes logged-in user to Customer, Staff, or Admin dashboard based on `user.role`.
+2. **Staff Panel Addition (`staff_main_navigation_view.dart`)**:
+   - Add **"Daily Sales Entry"** tab/section so staff can enter and submit today's sales before shift end.
+3. **Admin Panel Screens (`lib/modules/admin/views/`)**:
+   - `admin_dashboard_view.dart` — Combined Business Summary, Monthly Sales Graph, Monthly Expense Graph, Date-wise Sales & Expenses.
+   - `admin_staff_management_view.dart` — Create Staff, Search Staff, Toggle Status, Reset Password.
 
 ## Verification Plan
 
 ### Automated Tests
-- Run Flutter static analyzer (`analyze_file`) on all modified UI views.
+- Run backend integration tests (`npm test`).
+- Run Flutter static analyzer (`analyze_file`) across all new views.
 
 ### Manual Verification
-- Test screens on small phone screens, standard phones, tablets, and landscape orientation.
-- Verify zero `RenderFlex` overflow errors when soft keyboard appears.
-- Test with increased system font size (accessibility scaling).
+- Log in as Admin (`admin@cafe.com` / `Admin@123`).
+- Create a new Staff account (`Staff`).
+- Log in as the new Staff, record daily expenses in Kitchen, and submit Daily Sales.
+- Log back in as Admin, verify the daily sales and expense records appear under Date-wise and Monthly graphs.
+- Verify Customer Panel remains 100% operational.

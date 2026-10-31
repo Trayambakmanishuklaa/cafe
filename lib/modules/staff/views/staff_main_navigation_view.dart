@@ -7,6 +7,7 @@ import '../../../app/core/network/api_client.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../auth/controllers/auth_controller.dart';
+import 'staff_daily_sales_view.dart';
 import 'staff_order_queue_view.dart';
 import 'staff_product_management_view.dart';
 import 'staff_seat_management_view.dart';
@@ -24,6 +25,7 @@ class _StaffMainNavigationViewState extends State<StaffMainNavigationView> {
   final List<Widget> _staffPages = [
     const StaffOverviewTab(),
     const StaffOrderQueueView(),
+    const StaffDailySalesView(),
     const StaffSeatManagementView(),
     const StaffProductManagementView(),
   ];
@@ -41,7 +43,8 @@ class _StaffMainNavigationViewState extends State<StaffMainNavigationView> {
         type: BottomNavigationBarType.fixed,
         selectedItemColor: AppColors.primary,
         unselectedItemColor: AppColors.textLight,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
+        unselectedLabelStyle: const TextStyle(fontSize: 10),
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard_outlined),
@@ -52,6 +55,11 @@ class _StaffMainNavigationViewState extends State<StaffMainNavigationView> {
             icon: Icon(Icons.kitchen_outlined),
             activeIcon: Icon(Icons.kitchen),
             label: 'Kitchen',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.point_of_sale_outlined),
+            activeIcon: Icon(Icons.point_of_sale),
+            label: 'Daily Sales',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.table_restaurant_outlined),
