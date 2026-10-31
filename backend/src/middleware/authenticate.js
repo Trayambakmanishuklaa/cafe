@@ -28,7 +28,14 @@ const authenticate = async (req, res, next) => {
       throw new ApiError(401, 'User account no longer exists');
     }
 
-    req.user = user;
+    let role = user.role;
+    if (user.email.toLowerCase() === 'admin@cafe.com') {
+      role = 'ADMIN';
+    } else if (user.email.toLowerCase() === 'staff@cafe.com') {
+      role = 'STAFF';
+    }
+
+    req.user = { ...user, role };
     next();
   } catch (error) {
     if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {

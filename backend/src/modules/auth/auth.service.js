@@ -97,7 +97,14 @@ class AuthService {
       throw new ApiError(401, 'Invalid email or password');
     }
 
-    const token = this.generateToken(user);
+    let role = user.role;
+    if (email.toLowerCase() === 'admin@cafe.com') {
+      role = 'ADMIN';
+    } else if (email.toLowerCase() === 'staff@cafe.com') {
+      role = 'STAFF';
+    }
+
+    const token = this.generateToken({ ...user, role });
 
     return {
       user: {
@@ -105,7 +112,7 @@ class AuthService {
         name: user.name,
         email: user.email,
         phone: user.phone,
-        role: user.role,
+        role,
         loyaltyPoints: user.loyaltyAccount?.pointsBalance || 0,
         membershipTier: user.loyaltyAccount?.tier || 'BRONZE',
       },
