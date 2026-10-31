@@ -56,7 +56,8 @@ class UserModel {
 
   factory UserModel.fromRawJson(String str) => UserModel.fromJson(json.decode(str));
 
-  bool get isCustomer => role == 'CUSTOMER';
-  bool get isStaff => role == 'STAFF';
-  bool get isOwner => role == 'OWNER';
+  bool get isCustomer => role.toUpperCase() == 'CUSTOMER';
+  bool get isStaff => role.toUpperCase() == 'STAFF';
+  bool get isAdmin => role.toUpperCase() == 'ADMIN';
+  bool get isOwner => role.toUpperCase() == 'OWNER';
 }
