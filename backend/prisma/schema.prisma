@@ -88,7 +88,7 @@ model User {
   email        String   @unique
   passwordHash String
   name         String
-  phone        String?  @unique
+  phone        String?
   role         Role     @default(CUSTOMER)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
