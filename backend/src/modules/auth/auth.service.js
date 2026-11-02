@@ -6,13 +6,16 @@ const { ApiError } = require('../../middleware/errorHandler');
 
 class AuthService {
   static async register({ name, email, password, phone, role }) {
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+    const normalizedEmail = email ? email.trim().toLowerCase() : '';
+    const existingUser = await prisma.user.findUnique({ where: { email: normalizedEmail } });
     if (existingUser) {
       throw new ApiError(400, 'User with this email already exists');
     }
 
-    if (phone) {
-      const existingPhone = await prisma.user.findUnique({ where: { phone } });
+    const normalizedPhone = phone && phone.trim() !== '' ? phone.trim() : null;
+
+    if (normalizedPhone) {
+      const existingPhone = await prisma.user.findUnique({ where: { phone: normalizedPhone } });
       if (existingPhone) {
         throw new ApiError(400, 'User with this phone number already exists');
       }
@@ -26,10 +29,10 @@ class AuthService {
     const user = await prisma.$transaction(async (tx) => {
       const createdUser = await tx.user.create({
         data: {
-          name,
-          email,
+          name: name ? name.trim() : '',
+          email: normalizedEmail,
           passwordHash,
-          phone,
+          phone: normalizedPhone,
           role: assignedRole,
         },
       });
