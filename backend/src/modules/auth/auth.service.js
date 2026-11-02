@@ -39,25 +39,18 @@ class AuthService {
         data: { userId: createdUser.id },
       });
 
-      await tx.loyaltyAccount.create({
+      const loyaltyAccount = await tx.loyaltyAccount.create({
         data: { userId: createdUser.id, pointsBalance: 100, lifetimePoints: 100 }, // 100 welcome bonus points
       });
 
-      // Also record initial welcome bonus in loyalty transaction ledger
-      const loyaltyAccount = await tx.loyaltyAccount.findUnique({
-        where: { userId: createdUser.id },
+      await tx.loyaltyTransaction.create({
+        data: {
+          loyaltyAccountId: loyaltyAccount.id,
+          type: 'EARN',
+          points: 100,
+          description: 'Welcome Bonus for joining Cafe Passport!',
+        },
       });
-
-      if (loyaltyAccount) {
-        await tx.loyaltyTransaction.create({
-          data: {
-            loyaltyAccountId: loyaltyAccount.id,
-            type: 'EARN',
-            points: 100,
-            description: 'Welcome Bonus for joining Cafe Passport!',
-          },
-        });
-      }
 
       return createdUser;
     });
