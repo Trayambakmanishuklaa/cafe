@@ -8,7 +8,7 @@ class StaffManagementService {
       throw new ApiError(400, 'Full name, mobile number, and password are required');
     }
 
-    const existingPhone = await prisma.user.findFirst({ where: { phone } });
+    const existingPhone = await prisma.user.findUnique({ where: { phone } });
     if (existingPhone) {
       throw new ApiError(400, `Staff member with mobile number '${phone}' already exists`);
     }
