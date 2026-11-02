@@ -12,7 +12,7 @@ class AuthService {
     }
 
     if (phone) {
-      const existingPhone = await prisma.user.findUnique({ where: { phone } });
+      const existingPhone = await prisma.user.findFirst({ where: { phone } });
       if (existingPhone) {
         throw new ApiError(400, 'User with this phone number already exists');
       }
