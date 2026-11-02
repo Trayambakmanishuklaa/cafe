@@ -201,7 +201,7 @@ class _LoginViewState extends State<LoginView> {
                             const Icon(Icons.coffee, size: 32, color: AppColors.primary),
                             const SizedBox(height: 2),
                             const Text(
-                              "Shubh's",
+                              "TEA",
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
@@ -236,9 +236,13 @@ class _LoginViewState extends State<LoginView> {
               ),
             ),
 
+
+            const SizedBox(height: 30),
+
+
             // Form Section
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              padding: const EdgeInsets.symmetric(horizontal: 26.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -252,7 +256,7 @@ class _LoginViewState extends State<LoginView> {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    "Sign in to continue to Shubh's Cafe",
+                    "Sign in to continue to Tea Cafe",
                     style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: 24),

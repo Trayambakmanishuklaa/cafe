@@ -8,6 +8,8 @@ import '../../home/views/home_view.dart';
 import '../../menu/views/menu_view.dart';
 import '../../booking/views/booking_view.dart';
 import '../../loyalty/views/passport_view.dart';
+import '../../admin/views/admin_main_navigation_view.dart';
+import '../../owner/views/owner_main_navigation_view.dart';
 import '../../staff/views/staff_main_navigation_view.dart';
 
 class MainNavigationView extends StatefulWidget {
@@ -42,6 +44,16 @@ class _MainNavigationViewState extends State<MainNavigationView> {
         return const Scaffold(
           body: Center(child: CircularProgressIndicator(color: AppColors.primary)),
         );
+      }
+
+      // Admin Navigation Shell
+      if (user.isAdmin) {
+        return const AdminMainNavigationView();
+      }
+
+      // Owner Navigation Shell
+      if (user.isOwner) {
+        return const OwnerMainNavigationView();
       }
 
       // Staff Navigation Shell
