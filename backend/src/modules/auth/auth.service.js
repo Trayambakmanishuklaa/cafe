@@ -15,7 +15,7 @@ class AuthService {
     const normalizedPhone = phone && phone.trim() !== '' ? phone.trim() : null;
 
     if (normalizedPhone) {
-      const existingPhone = await prisma.user.findUnique({ where: { phone: normalizedPhone } });
+      const existingPhone = await prisma.user.findFirst({ where: { phone: normalizedPhone } });
       if (existingPhone) {
         throw new ApiError(400, 'User with this phone number already exists');
       }
@@ -79,8 +79,9 @@ class AuthService {
   }
 
   static async login({ email, password }) {
+    const normalizedEmail = email ? email.trim().toLowerCase() : '';
     let user = await prisma.user.findUnique({
-      where: { email },
+      where: { email: normalizedEmail },
       include: { loyaltyAccount: true },
     });
 
