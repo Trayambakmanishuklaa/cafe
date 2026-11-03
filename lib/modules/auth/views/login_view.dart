@@ -333,10 +333,15 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       onPressed: controller.isLoading.value ? null : controller.login,
                       child: controller.isLoading.value
-                          ? SizedBox(
-                              height: 38,
-                              width: 38,
-                              child: Lottie.asset('assets/animations/sample_animation.json'),
+                          ? Center(
+                              child: SizedBox(
+                                height: 42,
+                                width: 42,
+                                child: Lottie.asset(
+                                  'assets/animations/sample_animation.json',
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
                             )
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.center,
