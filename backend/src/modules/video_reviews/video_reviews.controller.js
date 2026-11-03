@@ -1,6 +1,27 @@
 const VideoReviewsService = require('./video_reviews.service');
+const { ApiError } = require('../../middleware/errorHandler');
 
 class VideoReviewsController {
+  static async uploadVideoFile(req, res, next) {
+    try {
+      if (!req.file) {
+        throw new ApiError(400, 'No video file provided');
+      }
+      const videoUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+      res.status(200).json({
+        success: true,
+        message: 'Video file uploaded successfully',
+        data: {
+          videoUrl,
+          filename: req.file.filename,
+          size: req.file.size,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async createVideoReview(req, res, next) {
     try {
       const review = await VideoReviewsService.createVideoReview(req.user.id, req.body);

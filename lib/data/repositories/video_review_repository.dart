@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import '../../app/core/network/api_client.dart';
 import '../models/video_review_model.dart';
 
@@ -22,6 +23,15 @@ class VideoReviewRepository {
       return Map<String, dynamic>.from(responseData);
     }
     return {};
+  }
+
+  Future<String> uploadVideoFile(String filePath) async {
+    final formData = FormData.fromMap({
+      'video': await MultipartFile.fromFile(filePath, filename: 'review_video.mp4'),
+    });
+    final res = await _apiClient.post('/video-reviews/upload', data: formData);
+    final map = _extractMap(res.data);
+    return map['videoUrl']?.toString() ?? '';
   }
 
   Future<List<VideoReviewModel>> getReviews({String? status}) async {

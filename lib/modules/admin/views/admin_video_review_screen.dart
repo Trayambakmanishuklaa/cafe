@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../../app/core/errors/error_utils.dart';
 import '../../../app/core/network/api_client.dart';
@@ -83,9 +85,14 @@ class _AdminVideoReviewScreenState extends State<AdminVideoReviewScreen> with Si
     );
   }
 
-  Future<void> _publishYouTube(String id) async {
+  Future<void> _publishYouTube(VideoReviewModel review) async {
     try {
-      await _repo.publishToYouTube(id);
+      await _repo.publishToYouTube(review.id);
+      // Native share to YouTube / share sheet
+      await Share.share(
+        '🎬 Customer Review: ${review.productName} at Shubh\'s Cafe!\nWatch now: ${review.originalVideoUrl}\n#ShubhsCafe #YouTubeShorts',
+        subject: 'Publish to YouTube Shorts',
+      );
       Get.snackbar('Published!', 'Video published to YouTube Shorts successfully', backgroundColor: Colors.green.withAlpha(35), colorText: Colors.green);
       _fetchReviews();
     } catch (e) {
@@ -93,14 +100,32 @@ class _AdminVideoReviewScreenState extends State<AdminVideoReviewScreen> with Si
     }
   }
 
-  Future<void> _publishInstagram(String id) async {
+  Future<void> _publishInstagram(VideoReviewModel review) async {
     try {
-      await _repo.publishToInstagram(id);
+      await _repo.publishToInstagram(review.id);
+      // Native share to Instagram / share sheet
+      await Share.share(
+        '☕ Customer Reaction: ${review.productName} at Shubh\'s Cafe!\nReel link: ${review.originalVideoUrl}\n#ShubhsCafe #InstagramReels',
+        subject: 'Publish to Instagram Reels',
+      );
       Get.snackbar('Published!', 'Video published to Instagram Reels successfully', backgroundColor: Colors.green.withAlpha(35), colorText: Colors.green);
       _fetchReviews();
     } catch (e) {
       Get.snackbar('Publish Failed', ErrorUtils.getCleanMessage(e));
     }
+  }
+
+  void _playVideo(String videoUrl) {
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.black,
+        child: Container(
+          width: double.infinity,
+          height: 400,
+          child: _NetworkVideoPlayer(videoUrl: videoUrl),
+        ),
+      ),
+    );
   }
 
   @override
@@ -181,6 +206,15 @@ class _AdminVideoReviewScreenState extends State<AdminVideoReviewScreen> with Si
                 Text('Recorded: ${DateFormat('dd MMM yyyy, hh:mm a').format(review.createdAt)}', style: const TextStyle(fontSize: 12, color: AppColors.textLight)),
                 const SizedBox(height: 12),
 
+                // Play Button
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.black87, foregroundColor: Colors.white, minimumSize: const Size.fromHeight(40)),
+                  icon: const Icon(Icons.play_circle_fill, color: Colors.red),
+                  label: const Text('Play Recorded Video'),
+                  onPressed: () => _playVideo(review.originalVideoUrl),
+                ),
+                const SizedBox(height: 10),
+
                 // Action Buttons
                 Wrap(
                   spacing: 8,
@@ -214,13 +248,13 @@ class _AdminVideoReviewScreenState extends State<AdminVideoReviewScreen> with Si
                         style: ElevatedButton.styleFrom(backgroundColor: Colors.red, minimumSize: const Size(110, 36)),
                         icon: const Icon(Icons.video_collection, size: 16),
                         label: const Text('Publish YT', style: TextStyle(fontSize: 12)),
-                        onPressed: () => _publishYouTube(review.id),
+                        onPressed: () => _publishYouTube(review),
                       ),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(backgroundColor: Colors.purple, minimumSize: const Size(110, 36)),
                         icon: const Icon(Icons.camera_alt, size: 16),
                         label: const Text('Publish IG', style: TextStyle(fontSize: 12)),
-                        onPressed: () => _publishInstagram(review.id),
+                        onPressed: () => _publishInstagram(review),
                       ),
                     ],
                     if (isPublished) ...[
@@ -236,6 +270,63 @@ class _AdminVideoReviewScreenState extends State<AdminVideoReviewScreen> with Si
           ),
         );
       },
+    );
+  }
+}
+
+class _NetworkVideoPlayer extends StatefulWidget {
+  final String videoUrl;
+  const _NetworkVideoPlayer({required this.videoUrl});
+
+  @override
+  State<_NetworkVideoPlayer> createState() => _NetworkVideoPlayerState();
+}
+
+class _NetworkVideoPlayerState extends State<_NetworkVideoPlayer> {
+  late VideoPlayerController _controller;
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
+      ..initialize().then((_) {
+        setState(() => _isInitialized = true);
+        _controller.play();
+      });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_isInitialized) {
+      return const Center(child: AppLoader(size: 50));
+    }
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        AspectRatio(
+          aspectRatio: _controller.value.aspectRatio,
+          child: VideoPlayer(_controller),
+        ),
+        Positioned(
+          bottom: 16,
+          child: FloatingActionButton(
+            backgroundColor: Colors.white,
+            child: Icon(_controller.value.isPlaying ? Icons.pause : Icons.play_arrow, color: Colors.black),
+            onPressed: () {
+              setState(() {
+                _controller.value.isPlaying ? _controller.pause() : _controller.play();
+              });
+            },
+          ),
+        ),
+      ],
     );
   }
 }
