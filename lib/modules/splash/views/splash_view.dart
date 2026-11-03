@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../../app/core/storage/storage_service.dart';
 import '../../../app/routes/app_routes.dart';
@@ -70,8 +71,13 @@ class _SplashViewState extends State<SplashView> {
               ),
             ),
             const SizedBox(height: 48),
-            const CircularProgressIndicator(
-              color: AppColors.secondary,
+            SizedBox(
+              height: 100,
+              width: 100,
+              child: Lottie.asset(
+                'assets/animations/sample_animation.json',
+                fit: BoxFit.contain,
+              ),
             ),
           ],
         ),
