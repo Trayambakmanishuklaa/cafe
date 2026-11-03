@@ -1,10 +1,8 @@
 import 'dart:io';
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../app/core/errors/error_utils.dart';
 import '../../../app/core/network/api_client.dart';
@@ -22,22 +20,17 @@ class StaffVideoReviewScreen extends StatefulWidget {
 
 class _StaffVideoReviewScreenState extends State<StaffVideoReviewScreen> {
   final VideoReviewRepository _repo = VideoReviewRepository(Get.find<ApiClient>());
+  final ImagePicker _picker = ImagePicker();
 
   List<VideoReviewModel> _reviews = [];
   bool _isLoading = true;
 
-  // Form & Camera state
+  // Form state
   final _customerNameController = TextEditingController();
   String _selectedProduct = 'Masala Chai';
   bool _consentAgreed = false;
-
-  CameraController? _cameraController;
-  List<CameraDescription> _cameras = [];
-  bool _isCameraInitialized = false;
-  bool _isRecording = false;
   String? _recordedVideoPath;
   VideoPlayerController? _videoPlayerController;
-  bool _isPlayingPreview = false;
   bool _isUploading = false;
 
   final List<String> _cafeProducts = [
@@ -60,7 +53,6 @@ class _StaffVideoReviewScreenState extends State<StaffVideoReviewScreen> {
 
   @override
   void dispose() {
-    _cameraController?.dispose();
     _videoPlayerController?.dispose();
     _customerNameController.dispose();
     super.dispose();
@@ -78,75 +70,27 @@ class _StaffVideoReviewScreenState extends State<StaffVideoReviewScreen> {
     }
   }
 
-  Future<void> _initCamera() async {
-    final cameraStatus = await Permission.camera.request();
-    final micStatus = await Permission.microphone.request();
-
-    if (!cameraStatus.isGranted || !micStatus.isGranted) {
-      Get.snackbar('Permission Denied', 'Camera and microphone permissions are required to record video reviews.',
-          backgroundColor: Colors.red.withAlpha(35), colorText: Colors.red);
-      if (cameraStatus.isPermanentlyDenied || micStatus.isPermanentlyDenied) {
-        openAppSettings();
-      }
-      return;
-    }
-
+  Future<void> _recordVideoWithCamera() async {
     try {
-      _cameras = await availableCameras();
-      if (_cameras.isEmpty) {
-        Get.snackbar('Error', 'No cameras found on device');
-        return;
-      }
+      final XFile? video = await _picker.pickVideo(
+        source: ImageSource.camera,
+        maxDuration: const Duration(seconds: 30),
+      );
 
-      // Default to rear camera or first available
-      _cameraController = CameraController(_cameras[0], ResolutionPreset.medium, enableAudio: true);
-      await _cameraController!.initialize();
+      if (video != null) {
+        setState(() {
+          _recordedVideoPath = video.path;
+        });
 
-      if (mounted) {
-        setState(() => _isCameraInitialized = true);
+        _videoPlayerController?.dispose();
+        _videoPlayerController = VideoPlayerController.file(File(video.path));
+        await _videoPlayerController!.initialize();
+        _videoPlayerController!.setLooping(true);
+        _videoPlayerController!.play();
+        setState(() {});
       }
     } catch (e) {
       Get.snackbar('Camera Error', ErrorUtils.getCleanMessage(e));
-    }
-  }
-
-  Future<void> _startRecording() async {
-    if (_cameraController == null || !_cameraController!.value.isInitialized) return;
-    if (_isRecording) return;
-
-    try {
-      await _cameraController!.startVideoRecording();
-      setState(() => _isRecording = true);
-
-      // Auto stop after 20 seconds for short review
-      Future.delayed(const Duration(seconds: 20), () {
-        if (mounted && _isRecording) {
-          _stopRecording();
-        }
-      });
-    } catch (e) {
-      Get.snackbar('Recording Error', ErrorUtils.getCleanMessage(e));
-    }
-  }
-
-  Future<void> _stopRecording() async {
-    if (_cameraController == null || !_isRecording) return;
-
-    try {
-      final file = await _cameraController!.stopVideoRecording();
-      setState(() {
-        _isRecording = false;
-        _recordedVideoPath = file.path;
-      });
-
-      // Initialize video player for preview
-      _videoPlayerController = VideoPlayerController.file(File(file.path));
-      await _videoPlayerController!.initialize();
-      _videoPlayerController!.setLooping(true);
-      _videoPlayerController!.play();
-      setState(() => _isPlayingPreview = true);
-    } catch (e) {
-      Get.snackbar('Stop Error', ErrorUtils.getCleanMessage(e));
     }
   }
 
@@ -155,7 +99,6 @@ class _StaffVideoReviewScreenState extends State<StaffVideoReviewScreen> {
     setState(() {
       _recordedVideoPath = null;
       _videoPlayerController = null;
-      _isPlayingPreview = false;
     });
   }
 
@@ -167,14 +110,14 @@ class _StaffVideoReviewScreenState extends State<StaffVideoReviewScreen> {
     }
 
     if (_recordedVideoPath == null || !File(_recordedVideoPath!).existsSync()) {
-      Get.snackbar('Video Missing', 'Please record a valid video review first.',
+      Get.snackbar('Video Missing', 'Please record a valid video review using the camera first.',
           backgroundColor: Colors.red.withAlpha(35), colorText: Colors.red);
       return;
     }
 
     setState(() => _isUploading = true);
     try {
-      // 1. Upload actual video file to backend
+      // 1. Upload video file to backend
       final videoUrl = await _repo.uploadVideoFile(_recordedVideoPath!);
 
       // 2. Submit review metadata
@@ -206,9 +149,8 @@ class _StaffVideoReviewScreenState extends State<StaffVideoReviewScreen> {
     setState(() {
       _consentAgreed = false;
       _recordedVideoPath = null;
-      _isCameraInitialized = false;
+      _videoPlayerController = null;
     });
-    _initCamera();
 
     Get.bottomSheet(
       Container(
@@ -223,7 +165,7 @@ class _StaffVideoReviewScreenState extends State<StaffVideoReviewScreen> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text('🎥 Real Camera Video Review', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                const Text('🎥 Record Customer Video Review', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                 const SizedBox(height: 12),
 
                 DropdownButtonFormField<String>(
@@ -240,7 +182,7 @@ class _StaffVideoReviewScreenState extends State<StaffVideoReviewScreen> {
                 ),
                 const SizedBox(height: 14),
 
-                // Camera Preview or Video Player Preview
+                // Video Preview or Record Button
                 Expanded(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16),
@@ -269,44 +211,20 @@ class _StaffVideoReviewScreenState extends State<StaffVideoReviewScreen> {
                                 ),
                               ],
                             )
-                          : _isCameraInitialized && _cameraController != null
-                              ? Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    CameraPreview(_cameraController!),
-                                    if (_isRecording)
-                                      Positioned(
-                                        top: 16,
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                          decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(20)),
-                                          child: const Text('🔴 REC (Portrait 9:16)', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
-                                        ),
-                                      ),
-                                    Positioned(
-                                      bottom: 16,
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          FloatingActionButton(
-                                            backgroundColor: _isRecording ? Colors.red : Colors.white,
-                                            child: Icon(_isRecording ? Icons.stop : Icons.fiber_manual_record, color: _isRecording ? Colors.white : Colors.red, size: 36),
-                                            onPressed: () async {
-                                              if (_isRecording) {
-                                                await _stopRecording();
-                                                setModalState(() {});
-                                              } else {
-                                                await _startRecording();
-                                                setModalState(() {});
-                                              }
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : const Center(child: AppLoader(size: 50)),
+                          : Center(
+                              child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary,
+                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                                ),
+                                icon: const Icon(Icons.videocam, size: 28),
+                                label: const Text('Open Camera & Record', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                onPressed: () async {
+                                  await _recordVideoWithCamera();
+                                  setModalState(() {});
+                                },
+                              ),
+                            ),
                     ),
                   ),
                 ),
@@ -351,7 +269,6 @@ class _StaffVideoReviewScreenState extends State<StaffVideoReviewScreen> {
       ),
       isScrollControlled: true,
     ).then((_) {
-      _cameraController?.dispose();
       _videoPlayerController?.dispose();
     });
   }
