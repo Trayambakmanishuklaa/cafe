@@ -167,7 +167,7 @@ class _AdminVideoReviewScreenState extends State<AdminVideoReviewScreen> with Si
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.between,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(review.productName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     Chip(

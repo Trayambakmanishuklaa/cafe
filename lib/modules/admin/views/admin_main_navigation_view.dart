@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../staff/views/staff_main_navigation_view.dart';
@@ -7,7 +6,6 @@ import 'admin_daily_sales_tab.dart';
 import 'admin_dashboard_view.dart';
 import 'admin_staff_management_view.dart';
 import 'admin_video_review_screen.dart';
-import 'social_media_settings_view.dart';
 
 class AdminMainNavigationView extends StatefulWidget {
   const AdminMainNavigationView({super.key});
@@ -16,7 +14,7 @@ class AdminMainNavigationView extends StatefulWidget {
   State<AdminMainNavigationView> createState() => _AdminMainNavigationViewState();
 }
 
-class _AdminMainNavigationViewViewState extends State<AdminMainNavigationView> {
+class _AdminMainNavigationViewState extends State<AdminMainNavigationView> {
   int _currentIndex = 0;
 
   final List<Widget> _adminPages = [
