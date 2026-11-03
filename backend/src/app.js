@@ -20,6 +20,7 @@ const salesRoutes = require('./modules/sales/sales.routes');
 const adminRoutes = require('./modules/admin/admin.routes');
 const staffRoutes = require('./modules/staff/staff.routes');
 const customersRoutes = require('./modules/customers/customers.routes');
+const videoReviewsRoutes = require('./modules/video_reviews/video_reviews.routes');
 
 const app = express();
 
@@ -66,6 +67,7 @@ app.use('/api/v1/seats', seatsRoutes);
 app.use('/api/v1/expenses', expensesRoutes);
 app.use('/api/v1/sales', salesRoutes);
 app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/video-reviews', videoReviewsRoutes);
 app.use('/api/v1/sheets', seatsRoutes);
 app.use('/api/v1/staff/seats', seatsRoutes);
 app.use('/api/v1/bookings/tables', seatsRoutes);

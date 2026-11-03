@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../staff/views/staff_main_navigation_view.dart';
 import 'admin_daily_sales_tab.dart';
 import 'admin_dashboard_view.dart';
 import 'admin_staff_management_view.dart';
+import 'admin_video_review_screen.dart';
+import 'social_media_settings_view.dart';
 
 class AdminMainNavigationView extends StatefulWidget {
   const AdminMainNavigationView({super.key});
@@ -13,15 +16,24 @@ class AdminMainNavigationView extends StatefulWidget {
   State<AdminMainNavigationView> createState() => _AdminMainNavigationViewState();
 }
 
-class _AdminMainNavigationViewState extends State<AdminMainNavigationView> {
+class _AdminMainNavigationViewViewState extends State<AdminMainNavigationView> {
   int _currentIndex = 0;
 
   final List<Widget> _adminPages = [
     const AdminDashboardView(),
     const AdminStaffManagementView(),
     const AdminDailySalesTab(),
-    const StaffOverviewTab(), // Complete Staff Expense Overview Integration
+    const StaffOverviewTab(),
+    const AdminVideoReviewScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // First-login onboarding popup check
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +69,12 @@ class _AdminMainNavigationViewState extends State<AdminMainNavigationView> {
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard_outlined),
             activeIcon: Icon(Icons.dashboard),
-            label: 'Expenses Tab',
+            label: 'Expenses',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.video_collection_outlined),
+            activeIcon: Icon(Icons.video_collection),
+            label: 'Video Reviews',
           ),
         ],
       ),

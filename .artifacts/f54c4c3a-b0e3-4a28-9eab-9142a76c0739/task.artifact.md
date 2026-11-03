@@ -1,0 +1,8 @@
+- [ ] Update Prisma schema (`schema.prisma`) with `CustomerVideoReview` and `SocialMediaAccount` models
+- [ ] Implement backend service, controller, and routes for Video Reviews and Social Media management
+- [ ] Create Flutter `VideoReviewModel` and `VideoReviewRepository`
+- [ ] Implement Staff Video Recording View with mandatory customer consent & upload flow
+- [ ] Implement Admin Video Review Management View (Pending, Approved, Rejected, Published)
+- [ ] Implement Admin Video Editor Screen (Title, caption, hashtags, branding, trimming)
+- [ ] Implement Admin First-Login Onboarding & Social Media Settings (YouTube & Instagram OAuth setup with Skip)
+- [ ] Integrate Staff Video Reviews into Staff Main Navigation and Admin Video Reviews into Admin Main Navigation

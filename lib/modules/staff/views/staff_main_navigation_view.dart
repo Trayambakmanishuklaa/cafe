@@ -11,6 +11,7 @@ import 'staff_daily_sales_view.dart';
 import 'staff_order_queue_view.dart';
 import 'staff_product_management_view.dart';
 import 'staff_seat_management_view.dart';
+import 'staff_video_review_screen.dart';
 
 class StaffMainNavigationView extends StatefulWidget {
   const StaffMainNavigationView({super.key});
@@ -28,6 +29,7 @@ class _StaffMainNavigationViewState extends State<StaffMainNavigationView> {
     const StaffDailySalesView(),
     const StaffSeatManagementView(),
     const StaffProductManagementView(),
+    const StaffVideoReviewScreen(),
   ];
 
   @override
@@ -70,6 +72,11 @@ class _StaffMainNavigationViewState extends State<StaffMainNavigationView> {
             icon: Icon(Icons.inventory_2_outlined),
             activeIcon: Icon(Icons.inventory_2),
             label: 'Products',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.videocam_outlined),
+            activeIcon: Icon(Icons.videocam),
+            label: 'Video Reviews',
           ),
         ],
       ),

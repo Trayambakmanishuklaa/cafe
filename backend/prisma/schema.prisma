@@ -101,6 +101,8 @@ model User {
   auditLogs            AuditLog[]
   expenses             Expense[]
   dailySales           DailySales[]
+  staffReviews         CustomerVideoReview[] @relation("StaffReviews")
+  adminReviewedVideos  CustomerVideoReview[] @relation("AdminReviewedVideos")
 }
 
 model CustomerProfile {
@@ -480,4 +482,54 @@ model DailySales {
 
   @@unique([staffId, salesDate])
   @@index([salesDate])
+}
+
+model CustomerVideoReview {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  staffId           String   @db.ObjectId
+  staff             User     @relation("StaffReviews", fields: [staffId], references: [id])
+  customerName      String?
+  productId         String?  @db.ObjectId
+  productName       String
+  originalVideoUrl  String
+  editedVideoUrl    String?
+  thumbnailUrl      String?
+  videoDuration     Int      // in seconds
+  consentStatus     Boolean  @default(true)
+  consentTimestamp  DateTime @default(now())
+  consentVersion    String   @default("1.0")
+  recordingDate     DateTime @default(now())
+  status            String   @default("PENDING_ADMIN_APPROVAL") // PENDING_ADMIN_APPROVAL, APPROVED, REJECTED, READY_TO_PUBLISH, PUBLISHED, PUBLISH_FAILED, WITHDRAWAL_REQUESTED, REMOVAL_PENDING, REMOVED
+  adminId           String?  @db.ObjectId
+  admin             User?    @relation("AdminReviewedVideos", fields: [adminId], references: [id])
+  rejectionReason   String?
+  title             String?
+  description       String?
+  hashtags          String?
+  youtubeVideoId    String?
+  youtubeVideoUrl   String?
+  youtubeStatus     String   @default("PENDING") // PENDING, PUBLISHED, FAILED
+  instagramMediaId  String?
+  instagramVideoUrl String?
+  instagramStatus   String   @default("PENDING") // PENDING, PUBLISHED, FAILED
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([staffId])
+  @@index([status])
+}
+
+model SocialMediaAccount {
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  platform           String    // YOUTUBE, INSTAGRAM
+  connectedAccountId String
+  accountDisplayName String
+  connectionStatus   String    @default("CONNECTED") // CONNECTED, DISCONNECTED, ERROR
+  encryptedTokenRef  String?
+  tokenExpiry        DateTime?
+  lastConnectedAt    DateTime  @default(now())
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@unique([platform])
 }
