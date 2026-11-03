@@ -95,9 +95,7 @@ class MenuView extends StatelessWidget {
           Expanded(
             child: Obx(() {
               if (menuController.isLoading.value) {
-                return const Center(
-                  child: CircularProgressIndicator(color: AppColors.primary),
-                );
+                return const AppLoader();
               }
 
               if (menuController.errorMessage.value.isNotEmpty) {

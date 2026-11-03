@@ -1,5 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'app_colors.dart';
+
+class AppLoader extends StatelessWidget {
+  final double size;
+  const AppLoader({super.key, this.size = 60});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SizedBox(
+        height: size,
+        width: size,
+        child: Lottie.asset(
+          'assets/animations/tea.json',
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
+  }
+}
 
 class AppResponsive {
   static bool isSmallScreen(BuildContext context) {

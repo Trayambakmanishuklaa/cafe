@@ -60,7 +60,7 @@ class _AdminDashboardViewState extends State<AdminDashboardView> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+          ? const AppLoader()
           : RefreshIndicator(
               onRefresh: _fetchOverview,
               child: SingleChildScrollView(

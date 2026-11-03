@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../app/core/network/api_client.dart';
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_theme.dart';
 
 class OwnerDashboardView extends StatefulWidget {
   const OwnerDashboardView({super.key});
@@ -54,7 +55,7 @@ class _OwnerDashboardViewState extends State<OwnerDashboardView> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+          ? const AppLoader()
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(

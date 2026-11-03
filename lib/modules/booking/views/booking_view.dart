@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_theme.dart';
 import '../../../data/models/booking_model.dart';
 import '../../../data/models/table_model.dart';
 import '../controllers/booking_controller.dart';
@@ -147,7 +148,7 @@ class BookingView extends StatelessWidget {
               if (controller.isLoading.value) {
                 return const SizedBox(
                   height: 200,
-                  child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                  child: AppLoader(),
                 );
               }
 
