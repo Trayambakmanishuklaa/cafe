@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../controllers/auth_controller.dart';
@@ -378,13 +379,10 @@ class _RegisterViewState extends State<RegisterView> {
                     controller.register();
                   },
                   child: controller.isLoading.value
-                      ? const SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
+                      ? SizedBox(
+                    height: 38,
+                    width: 38,
+                    child: Lottie.asset('assets/animations/sample_animation.json'),
                   )
                       : Row(
                     mainAxisAlignment: MainAxisAlignment.center,

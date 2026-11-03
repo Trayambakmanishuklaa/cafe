@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../../app/routes/app_routes.dart';
 import '../../../app/theme/app_colors.dart';
@@ -332,10 +333,10 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       onPressed: controller.isLoading.value ? null : controller.login,
                       child: controller.isLoading.value
-                          ? const SizedBox(
-                              height: 24,
-                              width: 24,
-                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          ? SizedBox(
+                              height: 38,
+                              width: 38,
+                              child: Lottie.asset('assets/animations/sample_animation.json'),
                             )
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.center,
