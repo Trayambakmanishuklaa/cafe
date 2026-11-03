@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:video_player/video_player.dart';
-
 import '../../../app/core/errors/error_utils.dart';
 import '../../../app/core/network/api_client.dart';
 import '../../../app/theme/app_colors.dart';
