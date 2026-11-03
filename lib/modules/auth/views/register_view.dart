@@ -384,7 +384,7 @@ class _RegisterViewState extends State<RegisterView> {
                       height: 42,
                       width: 42,
                       child: Lottie.asset(
-                        'assets/animations/sample_animation.json',
+                        'assets/animations/tea.json',
                         fit: BoxFit.contain,
                       ),
                     ),

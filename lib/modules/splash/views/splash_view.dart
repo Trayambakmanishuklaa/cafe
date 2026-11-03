@@ -75,7 +75,7 @@ class _SplashViewState extends State<SplashView> {
               height: 100,
               width: 100,
               child: Lottie.asset(
-                'assets/animations/sample_animation.json',
+                'assets/animations/tea.json',
                 fit: BoxFit.contain,
               ),
             ),
