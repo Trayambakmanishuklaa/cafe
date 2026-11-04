@@ -15,15 +15,31 @@ class StorageService extends GetxService {
   }
 
   Future<void> saveToken(String token) async {
-    await _secureStorage.write(key: ApiConstants.tokenKey, value: token);
+    try {
+      await _secureStorage.write(key: ApiConstants.tokenKey, value: token);
+    } catch (_) {}
+    await _prefs.setString(ApiConstants.tokenKey, token);
   }
 
   Future<String?> getToken() async {
-    return await _secureStorage.read(key: ApiConstants.tokenKey);
+    String? token;
+    try {
+      token = await _secureStorage.read(key: ApiConstants.tokenKey);
+    } catch (_) {
+      token = null;
+    }
+    // Fallback to SharedPreferences if secure storage fails or is null after app process kill / background removal
+    if (token == null || token.isEmpty) {
+      token = _prefs.getString(ApiConstants.tokenKey);
+    }
+    return token;
   }
 
   Future<void> clearToken() async {
-    await _secureStorage.delete(key: ApiConstants.tokenKey);
+    try {
+      await _secureStorage.delete(key: ApiConstants.tokenKey);
+    } catch (_) {}
+    await _prefs.remove(ApiConstants.tokenKey);
   }
 
   Future<void> saveUserRaw(String jsonUser) async {
@@ -35,7 +51,9 @@ class StorageService extends GetxService {
   }
 
   Future<void> clearAll() async {
-    await _secureStorage.deleteAll();
+    try {
+      await _secureStorage.deleteAll();
+    } catch (_) {}
     await _prefs.clear();
   }
 }
