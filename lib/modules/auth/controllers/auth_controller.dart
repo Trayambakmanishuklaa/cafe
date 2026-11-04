@@ -27,6 +27,13 @@ class AuthController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    // Load cached user synchronously instantly so currentUser is never null on app startup
+    final userRaw = _storageService.getUserRaw();
+    if (userRaw != null && userRaw.isNotEmpty) {
+      try {
+        currentUser.value = UserModel.fromRawJson(userRaw);
+      } catch (_) {}
+    }
     restoreSession();
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../app/core/storage/storage_service.dart';
 import '../../../app/routes/app_routes.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../auth/controllers/auth_controller.dart';
@@ -36,13 +37,31 @@ class _MainNavigationViewState extends State<MainNavigationView> {
     return Obx(() {
       final user = authController.currentUser.value;
 
-      // STRICT PRIVACY CHECK: If unauthenticated, immediately redirect to Login
+      // STRICT PRIVACY CHECK: If unauthenticated, verify storage token before redirecting to Login
       if (user == null) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          Get.offAllNamed(AppRoutes.LOGIN);
-        });
-        return const Scaffold(
-          body: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+        return FutureBuilder<String?>(
+          future: Get.find<StorageService>().getToken(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+              );
+            }
+            final token = snapshot.data;
+            if (token != null && token.isNotEmpty) {
+              // Token exists, session is just loading/restoring
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+              );
+            }
+            // Truly unauthenticated (no token at all)
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Get.offAllNamed(AppRoutes.LOGIN);
+            });
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+            );
+          },
         );
       }
 

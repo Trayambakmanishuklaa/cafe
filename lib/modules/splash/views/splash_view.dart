@@ -21,11 +21,12 @@ class _SplashViewState extends State<SplashView> {
   }
 
   Future<void> _checkAuth() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
     final storage = Get.find<StorageService>();
     final token = await storage.getToken();
+    final userRaw = storage.getUserRaw();
 
-    if (token != null && token.isNotEmpty) {
+    if ((token != null && token.isNotEmpty) || (userRaw != null && userRaw.isNotEmpty)) {
       Get.offAllNamed(AppRoutes.NAVIGATION);
     } else {
       Get.offAllNamed(AppRoutes.LOGIN);
