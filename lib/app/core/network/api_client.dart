@@ -60,10 +60,11 @@ class ApiClient {
             message = e.message!;
           }
 
-          if (statusCode == 401) {
-            final storageService = get_x.Get.find<StorageService>();
-            storageService.clearAll();
-          }
+          // Do not automatically clear storage on 401 to prevent unwanted auto-logout when app restarts or network drops
+          // if (statusCode == 401) {
+          //   final storageService = get_x.Get.find<StorageService>();
+          //   storageService.clearAll();
+          // }
 
           return handler.next(
             DioException(
@@ -82,8 +83,8 @@ class ApiClient {
     return await _dio.get(path, queryParameters: queryParameters);
   }
 
-  Future<Response> post(String path, {dynamic data}) async {
-    return await _dio.post(path, data: data);
+  Future<Response> post(String path, {dynamic data, ProgressCallback? onSendProgress, Options? options}) async {
+    return await _dio.post(path, data: data, onSendProgress: onSendProgress, options: options);
   }
 
   Future<Response> patch(String path, {dynamic data}) async {

@@ -25,11 +25,19 @@ class VideoReviewRepository {
     return {};
   }
 
-  Future<String> uploadVideoFile(String filePath) async {
+  Future<String> uploadVideoFile(String filePath, {ProgressCallback? onSendProgress}) async {
     final formData = FormData.fromMap({
       'video': await MultipartFile.fromFile(filePath, filename: 'review_video.mp4'),
     });
-    final res = await _apiClient.post('/video-reviews/upload', data: formData);
+    final res = await _apiClient.post(
+      '/video-reviews/upload',
+      data: formData,
+      onSendProgress: onSendProgress,
+      options: Options(
+        sendTimeout: const Duration(minutes: 5),
+        receiveTimeout: const Duration(minutes: 5),
+      ),
+    );
     final map = _extractMap(res.data);
     return map['videoUrl']?.toString() ?? '';
   }

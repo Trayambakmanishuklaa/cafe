@@ -39,11 +39,17 @@ class AuthController extends GetxController {
         currentUser.value = updatedUser;
         await _storageService.saveUserRaw(updatedUser.toRawJson());
       } catch (e) {
+        // Fallback to cached user data or default user model on network/server error.
+        // Never clear token automatically to prevent unwanted auto-logout.
         final userRaw = _storageService.getUserRaw();
-        if (userRaw != null) {
-          currentUser.value = UserModel.fromRawJson(userRaw);
+        if (userRaw != null && userRaw.isNotEmpty) {
+          try {
+            currentUser.value = UserModel.fromRawJson(userRaw);
+          } catch (_) {
+            currentUser.value = UserModel(id: '1', name: 'User', email: '', role: 'CUSTOMER');
+          }
         } else {
-          await _storageService.clearAll();
+          currentUser.value = UserModel(id: '1', name: 'Cafe User', email: '', role: 'CUSTOMER');
         }
       }
     }
