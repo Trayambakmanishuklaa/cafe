@@ -73,9 +73,9 @@ flutter:
   uses-material-design: true
 
   fonts:
-    - family: Viga
+    - family: Zeyada
       fonts:
-        - asset: assets/fonts/Viga-Regular.ttf
+        - asset: assets/fonts/Zeyada-Regular.ttf
 
   # To add assets to your application, add an assets section, like this:
   assets:
