@@ -57,7 +57,7 @@ class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      fontFamily: 'Zeyada',
+      fontFamily: 'Poppins',
       scaffoldBackgroundColor: AppColors.background,
       primaryColor: AppColors.primary,
       colorScheme: ColorScheme.fromSeed(
